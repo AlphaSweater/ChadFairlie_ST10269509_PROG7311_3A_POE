@@ -1,0 +1,191 @@
+﻿@{
+	Layout = null;
+	ViewData["Title"] = "Welcome";
+}
+
+<head>
+	<meta charset="utf-8" />
+	<title>AgriAuth</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+	<style>
+		body {
+			margin: 0;
+			font-family: 'Roboto', sans-serif;
+			background: linear-gradient(135deg, #4b6e4a, #2f3e2c);
+			color: #fff;
+		}
+
+		.auth-page-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			padding: 20px;
+			flex-direction: column;
+		}
+
+		.logo-container {
+			margin-bottom: 20px;
+			text-align: center;
+		}
+
+		.logo {
+			width: 200px;
+			height: 200px;
+			border-radius: 50%;
+		}
+
+		.form {
+			background-color: #e8f5e9;
+			color: #2c2c2c;
+			border-radius: 16px;
+			padding: 35px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+			width: 100%;
+			max-width: 420px;
+			transition: all 0.3s ease-in-out;
+		}
+
+		.title {
+			color: #3e4b2b;
+			font-weight: 700;
+			font-size: 26px;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.inputbox {
+			background-color: #f0f4f0;
+			width: 100%;
+			height: 45px;
+			border-radius: 8px;
+			border: 1px solid #ccc;
+			padding: 10px;
+			font-size: 16px;
+			color: #333;
+		}
+
+			.inputbox:focus {
+				border-color: #799c64;
+				box-shadow: 0 0 5px rgba(121, 156, 100, 0.5);
+				outline: none;
+			}
+
+		.button-confirm {
+			width: 100%;
+			height: 45px;
+			border-radius: 8px;
+			border: none;
+			background-color: #5b8c5a;
+			color: #fff;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: background-color 0.2s;
+		}
+
+			.button-confirm:hover {
+				background-color: #466c43;
+			}
+
+		.btn-primary {
+			background-color: #6c4f3d;
+			border: none;
+		}
+
+			.btn-primary:hover {
+				background-color: #563f31;
+			}
+
+		.error-bar {
+			width: 100%;
+			background-color: #f8d7da;
+			color: #721c24;
+			padding: 10px;
+			text-align: center;
+			border-radius: 5px;
+			border: 1px solid #f5c6cb;
+			margin-bottom: 15px;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		#enterButton {
+			font-size: 22px;
+			padding: 15px 30px;
+			border-radius: 50px;
+			background-color: #6c4f3d;
+			border: none;
+			transition: all 0.3s ease;
+		}
+
+			#enterButton:hover {
+				background-color: #563f31;
+				transform: scale(1.05);
+			}
+	</style>
+</head>
+
+<body>
+	<div class="auth-page-container">
+		<!-- Logo above the enter button -->
+		<div class="logo-container">
+			<img src="~/image/AgriEnergyLogo.svg" alt="AgriEnergy Logo" class="logo" />
+		</div>
+
+		<button id="enterButton" class="btn btn-primary mb-3">Enter</button>
+
+		<div id="authContainer" class="auth-container hidden">
+			<!-- Login Form -->
+			<form id="loginForm" class="form">
+				<div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
+				<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-3" required />
+				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-3" required />
+				<div id="loginError" class="error-bar hidden"></div>
+				<button type="submit" class="btn btn-primary button-confirm">Let's go →</button>
+			</form>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const enterButton = document.getElementById("enterButton");
+			const authContainer = document.getElementById("authContainer");
+			const loginForm = document.getElementById("loginForm");
+			const loginError = document.getElementById("loginError");
+
+			enterButton.addEventListener("click", () => {
+				enterButton.classList.add("hidden");
+				authContainer.classList.remove("hidden");
+			});
+
+			loginForm.addEventListener("submit", function (e) {
+				e.preventDefault();
+				loginError.classList.add("hidden");
+				const formData = new FormData(loginForm);
+
+				fetch("/login", {
+					method: "POST",
+					body: formData,
+				})
+					.then((res) => {
+						if (!res.ok) throw new Error("Login failed");
+						return res.json();
+					})
+					.then((data) => {
+						alert("Login successful!");
+					})
+					.catch((err) => {
+						loginError.textContent = err.message;
+						loginError.classList.remove("hidden");
+					});
+			});
+		});
+	</script>
+</body>
