@@ -2,6 +2,8 @@
 	Layout = null;
 	ViewData["Title"] = "Welcome";
 }
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
 	<meta charset="utf-8" />
@@ -9,7 +11,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
+	<link href="~/css/auth-animations.css" rel="stylesheet" />
 	<style>
 		body {
 			margin: 0;
@@ -20,22 +22,76 @@
 
 		.auth-page-container {
 			display: flex;
-			justify-content: center;
+			flex-direction: column;
 			align-items: center;
+			justify-content: center;
 			min-height: 100vh;
 			padding: 20px;
-			flex-direction: column;
+			transition: all 0.5s ease-in-out;
 		}
 
+			.auth-page-container.form-active {
+				flex-direction: row;
+				justify-content: center;
+			}
+
 		.logo-container {
-			margin-bottom: 20px;
 			text-align: center;
+			margin-bottom: 20px;
+			transition: all 0.3s ease;
 		}
+
+			.logo-container.form-active {
+				margin-bottom: 0;
+				margin-right: 50px;
+				text-align: center;
+			}
 
 		.logo {
 			width: 200px;
 			height: 200px;
 			border-radius: 50%;
+		}
+
+		.title {
+			font-weight: 700;
+			font-size: 32px;
+			margin-top: 10px;
+			transition: all 0.3s ease;
+		}
+
+			.title.form-active {
+				font-size: 28px;
+				text-align: center;
+			}
+
+		#enterButton {
+			font-size: 22px;
+			padding: 15px 30px;
+			border-radius: 50px;
+			background-color: #6c4f3d;
+			border: none;
+			color: #fff;
+			transition: all 0.3s ease;
+		}
+
+			#enterButton:hover {
+				background-color: #563f31;
+				transform: scale(1.05);
+			}
+
+		.form-container {
+			display: none;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			max-width: 1000px;
+			transition: all 0.3s ease;
+		}
+
+		.auth-page-container.form-active .form-container {
+			display: flex;
 		}
 
 		.form {
@@ -45,16 +101,7 @@
 			padding: 35px;
 			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 			width: 100%;
-			max-width: 420px;
-			transition: all 0.3s ease-in-out;
-		}
-
-		.title {
-			color: #3e4b2b;
-			font-weight: 700;
-			font-size: 26px;
-			text-align: center;
-			margin-bottom: 20px;
+			max-width: 400px;
 		}
 
 		.inputbox {
@@ -91,15 +138,6 @@
 				background-color: #466c43;
 			}
 
-		.btn-primary {
-			background-color: #6c4f3d;
-			border: none;
-		}
-
-			.btn-primary:hover {
-				background-color: #563f31;
-			}
-
 		.error-bar {
 			width: 100%;
 			background-color: #f8d7da;
@@ -112,38 +150,24 @@
 		}
 
 		.hidden {
-			display: none;
+			display: none !important;
 		}
-
-		#enterButton {
-			font-size: 22px;
-			padding: 15px 30px;
-			border-radius: 50px;
-			background-color: #6c4f3d;
-			border: none;
-			transition: all 0.3s ease;
-		}
-
-			#enterButton:hover {
-				background-color: #563f31;
-				transform: scale(1.05);
-			}
 	</style>
 </head>
 
-<body>
-	<div class="auth-page-container">
-		<!-- Logo above the enter button -->
-		<div class="logo-container">
+<body style="opacity: 0; transition: opacity 0.6s ease;" onload="document.body.style.opacity='1'">
+	<div class="auth-page-container" id="authPageContainer">
+		<!-- Logo and Title -->
+		<div class="logo-container" id="logoContainer">
 			<img src="~/image/AgriEnergyLogo.svg" alt="AgriEnergy Logo" class="logo" />
+			<div class="title" id="title">Agri Energy Connect</div>
+			<button id="enterButton" class="btn btn-primary mt-4">Enter</button>
 		</div>
 
-		<button id="enterButton" class="btn btn-primary mb-3">Enter</button>
-
-		<div id="authContainer" class="auth-container hidden">
-			<!-- Login Form -->
+		<!-- Form Container -->
+		<div class="form-container" id="formContainer">
 			<form id="loginForm" class="form">
-				<div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
+				<div class="title mb-4">Welcome,<br><span class="text-muted">login to continue</span></div>
 				<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-3" required />
 				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-3" required />
 				<div id="loginError" class="error-bar hidden"></div>
@@ -156,36 +180,22 @@
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			const enterButton = document.getElementById("enterButton");
-			const authContainer = document.getElementById("authContainer");
-			const loginForm = document.getElementById("loginForm");
-			const loginError = document.getElementById("loginError");
+			const authPageContainer = document.getElementById("authPageContainer");
+			const logoContainer = document.getElementById("logoContainer");
+			const title = document.getElementById("title");
 
 			enterButton.addEventListener("click", () => {
-				enterButton.classList.add("hidden");
-				authContainer.classList.remove("hidden");
-			});
+				enterButton.classList.add("fade-out");
 
-			loginForm.addEventListener("submit", function (e) {
-				e.preventDefault();
-				loginError.classList.add("hidden");
-				const formData = new FormData(loginForm);
-
-				fetch("/login", {
-					method: "POST",
-					body: formData,
-				})
-					.then((res) => {
-						if (!res.ok) throw new Error("Login failed");
-						return res.json();
-					})
-					.then((data) => {
-						alert("Login successful!");
-					})
-					.catch((err) => {
-						loginError.textContent = err.message;
-						loginError.classList.remove("hidden");
-					});
+				setTimeout(() => {
+					enterButton.classList.add("hidden"); // fully hide after fade
+					authPageContainer.classList.add("form-active");
+					logoContainer.classList.add("form-active");
+					title.classList.add("form-active");
+					formContainer.classList.add("animated", "show"); // trigger animations
+				}, 400); // match transition duration
 			});
 		});
 	</script>
 </body>
+</html>
