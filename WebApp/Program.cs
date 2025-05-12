@@ -28,7 +28,7 @@ namespace WebApp
 
 			app.MapControllerRoute(
 				name: "default",
-				pattern: "{controller=Home}/{action=Auth}/{id?}");
+				pattern: "{controller=Auth}/{action=Auth}/{id?}");
 
 			app.Run();
 		}

@@ -149,6 +149,16 @@
 			margin-bottom: 15px;
 		}
 
+		.switch-link {
+			color: #4b6e4a;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+			.switch-link:hover {
+				text-decoration: underline;
+			}
+
 		.hidden {
 			display: none !important;
 		}
@@ -166,13 +176,39 @@
 
 		<!-- Form Container -->
 		<div class="form-container" id="formContainer">
-			<form id="loginForm" class="form">
-				<div class="title mb-4">Welcome,<br><span class="text-muted">login to continue</span></div>
+            <!-- Login Form -->
+            <form id="loginForm" class="form" method="post" action="/Auth/Login">
+				<div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
 				<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-3" required />
 				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-3" required />
-				<div id="loginError" class="error-bar hidden"></div>
+				@if (ViewBag.LoginError != null)
+				{
+					<div id="loginError" class="error-bar">@ViewBag.LoginError</div>
+				}
 				<button type="submit" class="btn btn-primary button-confirm">Let's go →</button>
-			</form>
+				<p class="mt-3"><a href="#" id="showSignUp" class="switch-link">Need to make an account? Sign Up Here!</a></p>
+            </form>
+
+            <!-- Sign-Up Form -->
+            <form id="signUpForm" class="form hidden" method="post" action="/Auth/SignUp">
+				<div class="title">Welcome employee,<br><span class="text-muted">create an account</span></div>
+				<input type="text" name="name" placeholder="Name" class="form-control inputbox mb-3" required />
+				<input type="text" name="surname" placeholder="Surname" class="form-control inputbox mb-3" required />
+				<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-3" required />
+				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-3" required />
+				<input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control inputbox mb-3" required />
+				@if (ViewBag.SignUpError != null)
+				{
+					<div id="signUpError" class="error-bar">@ViewBag.SignUpError</div>
+				}
+				@if (ViewBag.SignUpSuccess != null)
+				{
+					<div id="signUpSuccess" class="error-bar" style="background-color: #d4edda; color: #155724; border-color: #c3e6cb;">@ViewBag.SignUpSuccess</div>
+				}
+				<button type="submit" class="btn btn-primary button-confirm">Sign Up</button>
+				<p class="mt-3"><a href="#" id="showLogin" class="switch-link">Already have an account? Log In!</a></p>
+            </form>
+
 		</div>
 	</div>
 
@@ -183,6 +219,22 @@
 			const authPageContainer = document.getElementById("authPageContainer");
 			const logoContainer = document.getElementById("logoContainer");
 			const title = document.getElementById("title");
+			const loginForm = document.getElementById("loginForm");
+			const signUpForm = document.getElementById("signUpForm");
+			const showSignUp = document.getElementById("showSignUp");
+			const showLogin = document.getElementById("showLogin");
+
+			showSignUp.addEventListener("click", (e) => {
+				e.preventDefault();
+				loginForm.classList.add("hidden");
+				signUpForm.classList.remove("hidden");
+			});
+
+			showLogin.addEventListener("click", (e) => {
+				e.preventDefault();
+				signUpForm.classList.add("hidden");
+				loginForm.classList.remove("hidden");
+			});
 
 			enterButton.addEventListener("click", () => {
 				enterButton.classList.add("fade-out");

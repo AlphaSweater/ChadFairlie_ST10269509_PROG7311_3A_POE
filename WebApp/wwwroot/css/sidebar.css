@@ -1,0 +1,51 @@
+﻿/* Sidebar container */
+.sidebar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 220px;
+	background-color: #2f3e2c;
+	color: #fff;
+	padding-top: 60px; /* leave space for any top nav if needed */
+	display: flex;
+	flex-direction: column;
+	z-index: 1000;
+}
+
+	/* Sidebar links */
+	.sidebar a {
+		color: #fff;
+		padding: 15px 20px;
+		text-decoration: none;
+		display: block;
+		transition: background-color 0.2s ease-in-out;
+	}
+
+		.sidebar a:hover {
+			background-color: #3e4f3a;
+		}
+
+	/* Sidebar sub-menu toggle */
+	.sidebar .submenu {
+		background-color: #3e4f3a;
+		padding-left: 20px;
+		display: none;
+		flex-direction: column;
+	}
+
+		.sidebar .submenu a {
+			padding: 10px 20px;
+			font-size: 0.95rem;
+		}
+
+		/* Active toggle class to show submenu */
+		.sidebar .submenu.show {
+			display: flex;
+		}
+
+/* Main content area */
+.main-content {
+	margin-left: 220px; /* Same as sidebar width */
+	padding: 20px;
+}
