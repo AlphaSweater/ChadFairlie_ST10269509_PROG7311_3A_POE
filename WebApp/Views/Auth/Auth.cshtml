@@ -168,11 +168,12 @@
 <body style="opacity: 0; transition: opacity 0.6s ease;" onload="document.body.style.opacity='1'">
 	<div class="auth-page-container" id="authPageContainer">
 		<!-- Logo and Title -->
-		<div class="logo-container" id="logoContainer">
+        <div class="logo-container" id="logoContainer">
 			<img src="~/image/AgriEnergyLogo.svg" alt="AgriEnergy Logo" class="logo" />
 			<div class="title" id="title">Agri Energy Connect</div>
 			<button id="enterButton" class="btn btn-primary mt-4">Enter</button>
-		</div>
+			<a asp-action="SkipLogin" class="btn btn-primary mt-4">Skip</a>
+        </div>
 
 		<!-- Form Container -->
 		<div class="form-container" id="formContainer">

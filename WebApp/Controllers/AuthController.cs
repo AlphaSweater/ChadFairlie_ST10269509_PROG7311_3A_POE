@@ -25,13 +25,13 @@ namespace WebApp.Controllers
 			{
 				_userSessionService.SetUserIdRole(1, "Employee"); // Set user ID and role in session
 
-				return RedirectToAction("Dashboard");
+				return RedirectToAction("Index", "Employee");
 			}
 			else if (email == "farmer@gmail.com" && password == "password")
 			{
 				_userSessionService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
 
-				return RedirectToAction("Dashboard");
+				return RedirectToAction("Index", "Farmer");
 			}
 			else
 			{
@@ -40,26 +40,10 @@ namespace WebApp.Controllers
 			}
 		}
 
-		public IActionResult Dashboard()
+		public IActionResult SkipLogin()
 		{
-			// Example: Retrieve session value
-			var (userId, userRole) = _userSessionService.GetUserIdRole();
-
-			if (userId == 0)
-			{
-				return RedirectToAction("Auth"); // Redirect to login if session is empty
-			}
-
-			if (userRole == "Employee")
-			{
-				return RedirectToAction("Index", "Employee"); // Redirect to Farmer controller for Employee role
-			}
-			else if (userRole == "Farmer")
-			{
-				return RedirectToAction("Index", "Farmer"); // Redirect to Farmer controller for Farmer role
-			}
-
-			return View();
+			_userSessionService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
+			return RedirectToAction("Index", "Farmer");
 		}
 
 		public IActionResult Logout()
