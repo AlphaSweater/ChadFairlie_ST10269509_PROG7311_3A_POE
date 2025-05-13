@@ -40,5 +40,9 @@ namespace WebApp.Models
 		[Required]
 		[Column("is_deleted")]
 		public bool IsDeleted { get; set; } = false; // Maps to is_deleted (INTEGER)
+
+		// Navigation Property
+		[ForeignKey("FarmerId")]
+		public Farmer Farmer { get; set; }
 	}
 }

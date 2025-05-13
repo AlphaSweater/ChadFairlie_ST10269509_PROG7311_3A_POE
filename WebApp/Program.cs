@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using System;
+using WebApp.Models;
 using WebApp.Services;
 
 namespace WebApp
@@ -23,6 +26,10 @@ namespace WebApp
 		{
 			// Add controllers with views
 			builder.Services.AddControllersWithViews();
+
+			// Register AgriDbContext with SQLite
+			builder.Services.AddDbContext<AgriDbContext>(options =>
+				options.UseSqlite("Data Source=localAgriEnergy.db"));
 
 			// Add session services
 			builder.Services.AddDistributedMemoryCache(); // For storing session data in memory

@@ -42,5 +42,9 @@ namespace WebApp.Models
 		[Required]
 		[Column("created_by_employee_id")]
 		public int CreatedByEmployeeId { get; set; } // Maps to created_by_employee_id (Foreign Key)
+
+		// Navigation Property
+		[ForeignKey("CreatedByEmployeeId")]
+		public Employee CreatedByEmployee { get; set; }
 	}
 }
