@@ -5,14 +5,20 @@
 	left: 0;
 	height: 100vh;
 	width: 220px;
-	background-color: #2f3e2c;
+	background: linear-gradient(135deg, #4b6e4a, #2f3e2c);
 	color: #fff;
 	padding-top: 60px; /* leave space for any top nav if needed */
 	display: flex;
 	flex-direction: column;
 	z-index: 1000;
 	overflow-y: auto; /* Allow scrolling within the sidebar */
+	border-top-right-radius: 25px; /* Rounded top-right corner */
+	box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
 }
+
+	.sidebar h4 {
+		margin-left: 20px;
+	}
 
 	/* Sidebar links */
 	.sidebar a {
@@ -20,11 +26,12 @@
 		padding: 15px 20px;
 		text-decoration: none;
 		display: block;
-		transition: background-color 0.2s ease-in-out;
+		transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 	}
 
 		.sidebar a:hover {
 			background-color: #3e4f3a;
+			color: #d4edda; /* Slightly lighter text on hover */
 		}
 
 	/* Sidebar sub-menu toggle */
@@ -40,7 +47,6 @@
 			font-size: 0.95rem;
 		}
 
-		/* Active toggle class to show submenu */
 		.sidebar .submenu.show {
 			display: flex;
 		}
@@ -50,5 +56,5 @@
 	margin-left: 220px; /* Same as sidebar width */
 	padding: 20px;
 	min-height: 100vh; /* Ensure full height */
-	width: 100vw;
+	width: calc(100vw - 220px); /* Adjust width to account for sidebar */
 }
