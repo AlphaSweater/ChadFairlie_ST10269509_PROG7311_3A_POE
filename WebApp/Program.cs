@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
 using WebApp.Models;
 using WebApp.Services;
 
@@ -18,6 +17,14 @@ namespace WebApp
 
 			// Configure middleware
 			ConfigureMiddleware(app);
+
+			// Seed the database
+			using (var scope = app.Services.CreateScope())
+			{
+				var services = scope.ServiceProvider;
+				var context = services.GetRequiredService<AgriDbContext>();
+				DatabaseSeeder.Seed(context);
+			}
 
 			app.Run();
 		}
