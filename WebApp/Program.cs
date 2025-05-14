@@ -66,6 +66,14 @@ namespace WebApp
 
 			builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 			builder.Services.AddScoped<EmployeeService>();
+
+			// Add logging
+			builder.Services.AddLogging(logging =>
+			{
+				logging.ClearProviders();
+				logging.AddConsole();
+				logging.AddDebug();
+			});
 		}
 
 		private static void ConfigureMiddleware(WebApplication app)

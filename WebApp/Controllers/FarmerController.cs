@@ -41,7 +41,7 @@ namespace WebApp.Controllers
 			var farmerId = _authService.GetUserIdRole().Item1;
 
 			// Retrieve all products created by the farmer
-			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+			var products = await _productService.GetAllByFarmerIdAsync(farmerId);
 			var viewModels = products.Select(p => new ProductViewModel(p));
 
 			// Retrieve all product categories for filtering
@@ -65,7 +65,7 @@ namespace WebApp.Controllers
 			var farmerId = _authService.GetUserIdRole().Item1;
 
 			// Retrieve all products created by the farmer
-			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+			var products = await _productService.GetAllByFarmerIdAsync(farmerId);
 			var viewModels = products.Select(p => new ProductViewModel(p));
 
 			// Apply filters based on the provided criteria

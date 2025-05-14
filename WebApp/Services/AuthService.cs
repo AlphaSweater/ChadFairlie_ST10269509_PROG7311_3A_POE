@@ -21,7 +21,7 @@ namespace WebApp.Services
 		public async Task<bool> LoginUserAsync(string email, string password)
 		{
 			// Check if the user is a farmer
-			var farmer = await _farmerService.GetFarmerByEmailAsync(email);
+			var farmer = await _farmerService.GetByEmailAsync(email);
 
 			if (farmer != null && VerifyPassword(farmer.PasswordHash, password))
 			{
@@ -32,7 +32,7 @@ namespace WebApp.Services
 			}
 
 			// Check if the user is an employee
-			var employee = await _employeeService.GetEmployeeByEmailAsync(email);
+			var employee = await _employeeService.GetByEmailAsync(email);
 
 			if (employee != null && VerifyPassword(employee.PasswordHash, password))
 			{
@@ -50,7 +50,7 @@ namespace WebApp.Services
 			// Hash the password before saving
 			employee.PasswordHash = HashPassword(employee.PasswordHash);
 			employee.CreatedOn = DateTime.UtcNow; // Set CreatedOn to current UTC time
-			await _employeeService.AddEmployeeAsync(employee);
+			await _employeeService.AddAsync(employee);
 			return true; // Registration successful
 		}
 

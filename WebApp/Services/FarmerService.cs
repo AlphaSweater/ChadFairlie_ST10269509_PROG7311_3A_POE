@@ -1,56 +1,172 @@
-﻿using WebApp.Models;
+﻿using Microsoft.Extensions.Logging;
+using WebApp.Models;
 using WebApp.Repositories;
 
 namespace WebApp.Services
 {
-	public class FarmerService
+	/// <summary>
+	/// Service for managing farmer-related operations
+	/// </summary>
+	public class FarmerService : IBaseService<Farmer, int>
 	{
 		private readonly IFarmerRepository _repository;
+		private readonly ILogger<FarmerService> _logger;
 
-		public FarmerService(IFarmerRepository repository)
+		public FarmerService(IFarmerRepository repository, ILogger<FarmerService> logger)
 		{
-			_repository = repository;
+			_repository = repository ?? throw new ArgumentNullException(nameof(repository));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
-		public Task<List<Farmer>> GetAllFarmersAsync()
+		/// <inheritdoc/>
+		public async Task<List<Farmer>> GetAllAsync()
 		{
-			return _repository.GetAllAsync();
+			try
+			{
+				return await _repository.GetAllAsync();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error retrieving all farmers");
+				throw;
+			}
 		}
 
-		public Task<Farmer?> GetFarmerByIdAsync(int id)
+		/// <inheritdoc/>
+		public async Task<Farmer?> GetByIdAsync(int id)
 		{
-			return _repository.GetByIdAsync(id);
+			try
+			{
+				if (id <= 0)
+					throw new ArgumentException("Farmer ID must be positive", nameof(id));
+
+				return await _repository.GetByIdAsync(id);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error retrieving farmer {FarmerId}", id);
+				throw;
+			}
 		}
 
-		public Task<Farmer?> GetFarmerByEmailAsync(string email)
+		/// <summary>
+		/// Gets a farmer by their email address
+		/// </summary>
+		public async Task<Farmer?> GetByEmailAsync(string email)
 		{
-			return _repository.GetByEmailAsync(email);
+			try
+			{
+				if (string.IsNullOrWhiteSpace(email))
+					throw new ArgumentException("Email is required", nameof(email));
+
+				return await _repository.GetByEmailAsync(email);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error retrieving farmer by email {Email}", email);
+				throw;
+			}
 		}
 
-		public async Task AddFarmerAsync(Farmer farmer)
+		/// <inheritdoc/>
+		public async Task<Farmer> AddAsync(Farmer farmer)
 		{
-			farmer.CreatedOn = DateTime.UtcNow;
-			await _repository.AddAsync(farmer);
-			await _repository.SaveChangesAsync();
+			try
+			{
+				if (farmer == null)
+					throw new ArgumentNullException(nameof(farmer));
+
+				ValidateFarmer(farmer);
+
+				farmer.CreatedOn = DateTime.UtcNow;
+				await _repository.AddAsync(farmer);
+				await _repository.SaveChangesAsync();
+
+				_logger.LogInformation("Farmer {FarmerId} created successfully", farmer.FarmerId);
+				return farmer;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error creating farmer");
+				throw;
+			}
 		}
 
-		public async Task UpdateFarmerAsync(Farmer farmer)
+		/// <inheritdoc/>
+		public async Task<Farmer> UpdateAsync(Farmer farmer)
 		{
-			await _repository.UpdateAsync(farmer);
-			await _repository.SaveChangesAsync();
+			try
+			{
+				if (farmer == null)
+					throw new ArgumentNullException(nameof(farmer));
+
+				ValidateFarmer(farmer);
+
+				await _repository.Update(farmer);
+				await _repository.SaveChangesAsync();
+
+				_logger.LogInformation("Farmer {FarmerId} updated successfully", farmer.FarmerId);
+				return farmer;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error updating farmer {FarmerId}", farmer?.FarmerId);
+				throw;
+			}
 		}
 
-		public async Task DeleteFarmerAsync(int id)
+		/// <inheritdoc/>
+		public async Task DeleteAsync(int id)
 		{
-			await _repository.DeleteAsync(id);
-			await _repository.SaveChangesAsync();
+			try
+			{
+				if (id <= 0)
+					throw new ArgumentException("Farmer ID must be positive", nameof(id));
+
+				await _repository.DeleteAsync(id);
+				await _repository.SaveChangesAsync();
+
+				_logger.LogInformation("Farmer {FarmerId} deleted successfully", id);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error deleting farmer {FarmerId}", id);
+				throw;
+			}
 		}
 
-		public async Task<List<Farmer>> FilterFarmersAsync(string? name, int? createdByEmployeeId)
+		/// <summary>
+		/// Filters farmers based on name and employee ID
+		/// </summary>
+		public async Task<List<Farmer>> FilterFarmersAsync(string? name = null, int? createdByEmployeeId = null)
 		{
-			return await _repository.FilterAsync(f =>
-				(string.IsNullOrEmpty(name) || (f.FirstName + " " + f.LastName).Contains(name, StringComparison.OrdinalIgnoreCase)) &&
-				(!createdByEmployeeId.HasValue || f.CreatedByEmployeeId == createdByEmployeeId.Value));
+			try
+			{
+				return await _repository.FindAsync(f =>
+					(string.IsNullOrEmpty(name) || 
+					 (f.FirstName + " " + f.LastName).Contains(name, StringComparison.OrdinalIgnoreCase)) &&
+					(!createdByEmployeeId.HasValue || f.CreatedByEmployeeId == createdByEmployeeId.Value));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error filtering farmers");
+				throw;
+			}
+		}
+
+		private static void ValidateFarmer(Farmer farmer)
+		{
+			if (string.IsNullOrWhiteSpace(farmer.FirstName))
+				throw new ArgumentException("First name is required", nameof(farmer));
+
+			if (string.IsNullOrWhiteSpace(farmer.LastName))
+				throw new ArgumentException("Last name is required", nameof(farmer));
+
+			if (string.IsNullOrWhiteSpace(farmer.Email))
+				throw new ArgumentException("Email is required", nameof(farmer));
+
+			if (string.IsNullOrWhiteSpace(farmer.PasswordHash))
+				throw new ArgumentException("Password hash is required", nameof(farmer));
 		}
 	}
 }

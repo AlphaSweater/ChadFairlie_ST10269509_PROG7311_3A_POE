@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace WebApp.Models
 {
 	[Table("TBL_Employees")] // Maps the class to the table
-	public class Employee
+	public class Employee : BaseEntity
 	{
 		[Key]
 		[Column("employee_id")]
@@ -23,20 +23,13 @@ namespace WebApp.Models
 		[Required]
 		[MaxLength(255)]
 		[Column("email")]
+		[EmailAddress]
 		public string Email { get; set; } // Maps to email
 
 		[Required]
 		[Column("password_hash")]
 		public string PasswordHash { get; set; } // Maps to password_hash
 
-		[Column("created_on")]
-		public DateTime? CreatedOn { get; set; } // Maps to created_on (TEXT)
-
-		[Column("updated_on")]
-		public DateTime? UpdatedOn { get; set; } // Maps to updated_on (TEXT)
-
-		[Required]
-		[Column("is_deleted")]
-		public bool IsDeleted { get; set; } = false; // Maps to is_deleted (INTEGER)
+		public string FullName => $"{FirstName} {LastName}";
 	}
 }

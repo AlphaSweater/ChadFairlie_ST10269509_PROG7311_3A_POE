@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace WebApp.Models
 {
 	[Table("TBL_Categories")] // Maps the class to the table
-	public class Category
+	public class Category : BaseEntity
 	{
 		[Key]
 		[Column("category_id")]
@@ -14,15 +14,5 @@ namespace WebApp.Models
 		[MaxLength(100)]
 		[Column("name")]
 		public string Name { get; set; } // Category name
-
-		[Column("created_on")]
-		public DateTime? CreatedOn { get; set; } // Timestamp for creation
-
-		[Column("updated_on")]
-		public DateTime? UpdatedOn { get; set; } // Timestamp for updates
-
-		[Required]
-		[Column("is_deleted")]
-		public bool IsDeleted { get; set; } = false; // Soft delete flag
 	}
 }

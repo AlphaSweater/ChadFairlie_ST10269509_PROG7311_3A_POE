@@ -1,40 +1,5 @@
 ﻿@model WebApp.ViewModels.EmployeeViewModels.FarmerViewModel
 
-<style>
-	.farmer-card {
-		width: 100%;
-		max-width: 250px;
-		background: white;
-		padding: .4em;
-		border-radius: 6px;
-		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-		display: inline-block;
-	}
-
-	.farmer-card-header {
-		font-weight: 600;
-		color: rgb(88, 87, 87);
-		padding: 7px;
-		font-size: 1em;
-	}
-
-	.farmer-card-body {
-		color: gray;
-		font-size: 0.9em;
-		padding: 0 7px 7px;
-	}
-
-	.farmer-card-actions {
-		display: flex;
-		justify-content: space-between;
-		padding: 0.5em 0.6em;
-	}
-
-		.farmer-card-actions a {
-			font-size: 0.8em;
-		}
-</style>
-
 <div class="farmer-card">
 	<div class="farmer-card-header">
 		@Model.FirstName @Model.LastName

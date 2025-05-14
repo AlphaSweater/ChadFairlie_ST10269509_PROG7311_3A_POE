@@ -76,7 +76,7 @@ namespace WebApp.Controllers
 			await HandleImageUpload(newProductViewModel, newProduct);
 
 			// Save the product to the database
-			await _productService.AddProductAsync(newProduct);
+			await _productService.AddAsync(newProduct);
 
 			// Redirect to the farmer's product management page
 			return RedirectToAction("ManageProducts", "Farmer");

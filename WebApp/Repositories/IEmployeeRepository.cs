@@ -1,23 +1,10 @@
-﻿using WebApp.Models;
+﻿using System.Linq.Expressions;
+using WebApp.Models;
 
 namespace WebApp.Repositories
 {
-	public interface IEmployeeRepository
+	public interface IEmployeeRepository : IBaseRepository<Employee>
 	{
-		Task<List<Employee>> GetAllAsync();
-
-		Task<Employee?> GetByIdAsync(int id);
-
 		Task<Employee?> GetByEmailAsync(string email);
-
-		Task AddAsync(Employee employee);
-
-		Task UpdateAsync(Employee employee);
-
-		Task DeleteAsync(int id);
-
-		Task<List<Employee>> FilterAsync(Func<Employee, bool> predicate);
-
-		Task SaveChangesAsync();
 	}
 }

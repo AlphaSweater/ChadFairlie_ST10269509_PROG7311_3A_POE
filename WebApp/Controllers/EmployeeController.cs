@@ -42,7 +42,7 @@ namespace WebApp.Controllers
 		/// <returns>The view with a list of farmers.</returns>
 		public async Task<IActionResult> ManageFarmers()
 		{
-			var farmers = await _farmerService.GetAllFarmersAsync();
+			var farmers = await _farmerService.GetAllAsync();
 			var viewModels = farmers.Select(f => new FarmerViewModel(f));
 			return View(viewModels);
 		}
@@ -59,7 +59,7 @@ namespace WebApp.Controllers
 			var employeeId = _authService.GetUserIdRole().Item1;
 			var farmers = (createdByMe == "on")
 				? await _farmerService.FilterFarmersAsync(null, employeeId)
-				: await _farmerService.GetAllFarmersAsync();
+				: await _farmerService.GetAllAsync();
 
 			if (!string.IsNullOrEmpty(searchName))
 			{
@@ -81,11 +81,11 @@ namespace WebApp.Controllers
 		/// <returns>The view with farmer details and their products.</returns>
 		public async Task<IActionResult> ViewFarmer(int farmerId)
 		{
-			var farmer = await _farmerService.GetFarmerByIdAsync(farmerId);
+			var farmer = await _farmerService.GetByIdAsync(farmerId);
 			if (farmer == null)
 				return NotFound();
 
-			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+			var products = await _productService.GetAllByFarmerIdAsync(farmerId);
 			var categories = await _productService.GetAllCategoriesAsync();
 			ViewBag.Categories = categories.Select(c => c.Name).ToList();
 
@@ -121,7 +121,7 @@ namespace WebApp.Controllers
 			model.CreatedByEmployeeId = _authService.GetUserIdRole().Item1;
 			model.HashPassword = _authService.HashPassword(model.Password);
 
-			await _farmerService.AddFarmerAsync(new Farmer(model));
+			await _farmerService.AddAsync(new Farmer(model));
 			return RedirectToAction(nameof(ManageFarmers));
 		}
 
@@ -132,7 +132,7 @@ namespace WebApp.Controllers
 		/// <returns>The edit farmer view.</returns>
 		public IActionResult EditFarmer(int farmerId)
 		{
-			var farmer = _farmerService.GetFarmerByIdAsync(farmerId).Result;
+			var farmer = _farmerService.GetByIdAsync(farmerId).Result;
 			if (farmer == null)
 				return NotFound();
 
@@ -152,7 +152,7 @@ namespace WebApp.Controllers
 			if (!ModelState.IsValid)
 				return View("EditFarmer", model);
 
-			var farmer = await _farmerService.GetFarmerByIdAsync(model.FarmerId);
+			var farmer = await _farmerService.GetByIdAsync(model.FarmerId);
 			if (farmer != null)
 			{
 				farmer.FirstName = model.FirstName;
@@ -160,7 +160,7 @@ namespace WebApp.Controllers
 				farmer.Email = model.Email;
 				farmer.UpdatedOn = DateTime.UtcNow;
 
-				await _farmerService.UpdateFarmerAsync(farmer);
+				await _farmerService.UpdateAsync(farmer);
 			}
 			return RedirectToAction(nameof(ManageFarmers));
 		}
@@ -173,10 +173,10 @@ namespace WebApp.Controllers
 		[HttpPost]
 		public async Task<IActionResult> DeleteFarmer(int farmerId)
 		{
-			var farmer = await _farmerService.GetFarmerByIdAsync(farmerId);
+			var farmer = await _farmerService.GetByIdAsync(farmerId);
 			if (farmer != null)
 			{
-				await _farmerService.DeleteFarmerAsync(farmer.FarmerId);
+				await _farmerService.DeleteAsync(farmer.FarmerId);
 			}
 			return RedirectToAction(nameof(ManageFarmers));
 		}
@@ -187,7 +187,7 @@ namespace WebApp.Controllers
 		/// <returns>The view with a list of products.</returns>
 		public async Task<IActionResult> ManageProducts()
 		{
-			var products = await _productService.GetAllProductsAsync();
+			var products = await _productService.GetAllAsync();
 			var categories = await _productService.GetAllCategoriesAsync();
 			ViewBag.Categories = categories.Select(c => c.Name).ToList();
 
@@ -205,7 +205,7 @@ namespace WebApp.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetFilteredProducts(string? searchName, string? farmerName, string? category, DateTime? createdDate)
 		{
-			var products = (await _productService.GetAllProductsAsync()).Select(p => new ProductViewModel(p));
+			var products = (await _productService.GetAllAsync()).Select(p => new ProductViewModel(p));
 
 			if (!string.IsNullOrWhiteSpace(searchName))
 				products = products.Where(p => p.Name.Contains(searchName.Trim(), StringComparison.OrdinalIgnoreCase));
@@ -233,7 +233,7 @@ namespace WebApp.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetFilteredProductsByFarmer(int farmerId, string? category, DateTime? startDate, DateTime? endDate)
 		{
-			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+			var products = await _productService.GetAllByFarmerIdAsync(farmerId);
 
 			if (!string.IsNullOrWhiteSpace(category))
 				products = products.Where(p => p.Category.Equals(category.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();

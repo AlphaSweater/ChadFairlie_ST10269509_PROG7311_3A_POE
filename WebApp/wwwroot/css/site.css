@@ -1,3 +1,261 @@
+/* Theme Variables */
+:root {
+    /* Colors */
+    --primary-color: #5e8c61;
+    --primary-hover: #4e7551;
+    --secondary-color: #6f4e37;
+    --background-color: #fbf8f3;
+    --card-background: #f6f4ef;
+    --danger-color: #dc3545;
+    --text-color: #333333;
+    --text-muted: #666666;
+    --border-color: #e0dcd2;
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Border Radius */
+    --border-radius-sm: 6px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* Global Styles */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.text-brown {
+    color: var(--secondary-color);
+}
+
+/* Forms */
+.form-label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.form-control, .form-select {
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-sm);
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.15rem rgba(94, 140, 97, 0.25);
+}
+
+/* Buttons */
+.btn {
+    font-weight: 600;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-success {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    background-color: var(--border-color);
+    color: var(--secondary-color);
+    border: none;
+}
+
+.btn-cancel:hover {
+    background-color: #d5cfc3;
+    color: var(--secondary-color);
+}
+
+/* Cards */
+.card {
+    background-color: var(--card-background);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-lg);
+}
+
+/* Product Card */
+.product-card {
+    width: 100%;
+    max-width: 250px;
+    background: white;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+}
+
+.product-card-image {
+    background-color: #f8f8f8;
+    width: 100%;
+    height: 130px;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-card-image img {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.product-card-category {
+    text-transform: uppercase;
+    font-size: 0.7em;
+    font-weight: 600;
+    color: var(--primary-color);
+    padding: var(--spacing-sm) var(--spacing-sm) 0;
+}
+
+.product-card-heading {
+    padding: var(--spacing-sm);
+}
+
+.product-card-name-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.product-card-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.product-card-price {
+    font-weight: 600;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+.product-card-author {
+    color: var(--text-muted);
+    font-size: 0.85em;
+    margin-top: var(--spacing-xs);
+}
+
+/* Farmer Card */
+.farmer-card {
+    width: 100%;
+    max-width: 250px;
+    background: white;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease-in-out;
+}
+
+.farmer-card:hover {
+    transform: translateY(-2px);
+}
+
+.farmer-card-header {
+    font-weight: 600;
+    color: var(--text-color);
+    padding: var(--spacing-sm);
+    font-size: 1.1em;
+}
+
+.farmer-card-body {
+    color: var(--text-muted);
+    padding: 0 var(--spacing-sm) var(--spacing-sm);
+}
+
+.farmer-card-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+}
+
+/* Filter Card */
+.filter-card {
+    background-color: var(--card-background);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.filter-card .card-body {
+    padding: var(--spacing-lg);
+}
+
+/* Dashboard */
+.dashboard-container {
+    padding: var(--spacing-xl) 0;
+}
+
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-message {
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    margin-bottom: var(--spacing-xl);
+}
+
+.placeholder-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    width: 80%;
+    max-width: 600px;
+    margin: var(--spacing-md) auto;
+}
+
+.placeholder-card h3 {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.placeholder-card p {
+    color: var(--secondary-color);
+}
+
 html {
   font-size: 14px;
 }
