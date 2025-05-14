@@ -113,13 +113,67 @@ namespace WebApp.Controllers
 			return RedirectToAction("ManageFarmers", "Employee");
 		}
 
+		public IActionResult EditFarmer(int farmerId)
+		{
+			var existingFarmer = _farmerService.GetFarmerByIdAsync(farmerId).Result;
+			if (existingFarmer == null)
+			{
+				return NotFound(); // Handle the case where the farmer is not found
+			}
+
+			var existingFarmerViewModel = new AddFarmerViewModel(existingFarmer);
+
+			return View(existingFarmerViewModel);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> UpdateFarmer(AddFarmerViewModel farmerViewModel)
+		{
+			// dummy password for validation purposes
+
+			// Validate the model state
+			if (!ModelState.IsValid)
+			{
+				// If the model state is invalid, return the view with the current model to show validation errors
+				if (string.IsNullOrEmpty(farmerViewModel.FirstName))
+				{
+					ModelState.AddModelError("FirstName", "First name is required.");
+				}
+				if (string.IsNullOrEmpty(farmerViewModel.LastName))
+				{
+					ModelState.AddModelError("LastName", "Last name is required.");
+				}
+				if (string.IsNullOrEmpty(farmerViewModel.Email))
+				{
+					ModelState.AddModelError("Email", "Email is required.");
+				}
+				else if (!farmerViewModel.Email.Contains("@"))
+				{
+					ModelState.AddModelError("Email", "Invalid email address.");
+				}
+
+				return View("EditFarmer", farmerViewModel);
+			}
+
+			var existingFarmer = await _farmerService.GetFarmerByIdAsync(farmerViewModel.FarmerId);
+			if (existingFarmer != null)
+			{
+				existingFarmer.FirstName = farmerViewModel.FirstName;
+				existingFarmer.LastName = farmerViewModel.LastName;
+				existingFarmer.Email = farmerViewModel.Email;
+				existingFarmer.UpdatedOn = DateTime.UtcNow; // Update the timestamp
+				await _farmerService.UpdateFarmerAsync(existingFarmer);
+			}
+			return RedirectToAction("ManageFarmers", "Employee");
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> DeleteFarmer(int farmerId)
 		{
 			var farmer = await _farmerService.GetFarmerByIdAsync(farmerId);
 			if (farmer != null)
 			{
-				await _farmerService.DeleteFarmerAsync(farmer);
+				await _farmerService.DeleteFarmerAsync(farmer.FarmerId);
 			}
 			return RedirectToAction("ManageFarmers", "Employee");
 		}

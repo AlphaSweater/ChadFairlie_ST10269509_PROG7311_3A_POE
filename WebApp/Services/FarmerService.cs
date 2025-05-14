@@ -17,7 +17,7 @@ namespace WebApp.Services
 			return _repository.GetAllAsync();
 		}
 
-		public Task<Farmer?> GetFarmerAsync(int id)
+		public Task<Farmer?> GetFarmerByIdAsync(int id)
 		{
 			return _repository.GetByIdAsync(id);
 		}

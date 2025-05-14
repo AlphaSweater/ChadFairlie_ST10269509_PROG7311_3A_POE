@@ -126,8 +126,36 @@
 	</div>
 
 	<div class="product-card-actions">
-		<a asp-action="Details" asp-controller="Product" asp-route-id="@Model.ProductId" class="btn btn-sm btn-outline-primary">View</a>
-		<a asp-action="Delete" asp-controller="Product" asp-route-id="@Model.ProductId" class="btn btn-sm btn-outline-danger">Remove</a>
+		<form asp-controller="Product" asp-action="EditProduct" method="post" class="d-inline">
+			<input type="hidden" name="ProductId" value="@Model.ProductId" />
+			<button type="submit" class="btn btn-sm btn-outline-success">Edit</button>
+		</form>
+		<form asp-controller="Product" asp-action="DeleteProduct" method="post" class="d-inline delete-product-form">
+			<input type="hidden" name="ProductId" value="@Model.ProductId" />
+			<button type="button" class="btn btn-sm btn-outline-danger delete-product-btn">Delete</button>
+		</form>
 	</div>
 </div>
 
+<script>
+	document.addEventListener('click', function (e) {
+		if (e.target && e.target.classList.contains('delete-product-btn')) {
+			e.preventDefault();
+
+			const form = e.target.closest('.delete-product-form');
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#d33',
+				cancelButtonColor: '#3085d6',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					form.submit();
+				}
+			});
+		}
+	});
+</script>

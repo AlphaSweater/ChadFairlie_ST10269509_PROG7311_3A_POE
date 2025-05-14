@@ -52,7 +52,40 @@
 		</p>
 	</div>
 	<div class="farmer-card-actions">
-		<a asp-action="Edit" asp-route-id="@Model.FarmerId" class="btn btn-sm btn-outline-success">Edit</a>
-		<a asp-action="Delete" asp-route-id="@Model.FarmerId" class="btn btn-sm btn-outline-danger">Delete</a>
+		<form asp-controller="Employee" asp-action="ViewFarmer" method="post" class="d-inline">
+			<input type="hidden" name="FarmerId" value="@Model" />
+			<button type="submit" class="btn btn-sm btn-outline-info">View</button>
+		</form>
+		<form asp-controller="Employee" asp-action="EditFarmer" method="post" class="d-inline">
+			<input type="hidden" name="FarmerId" value="@Model.FarmerId" />
+			<button type="submit" class="btn btn-sm btn-outline-success">Edit</button>
+		</form>
+		<form asp-controller="Employee" asp-action="DeleteFarmer" method="post" class="d-inline delete-farmer-form">
+			<input type="hidden" name="FarmerId" value="@Model.FarmerId" />
+			<button type="button" class="btn btn-sm btn-outline-danger delete-farmer-btn">Delete</button>
+		</form>
 	</div>
 </div>
+
+<script>
+	document.addEventListener('click', function (e) {
+		if (e.target && e.target.classList.contains('delete-farmer-btn')) {
+			e.preventDefault();
+
+			const form = e.target.closest('.delete-farmer-form');
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#d33',
+				cancelButtonColor: '#3085d6',
+				confirmButtonText: 'Yes, delete it!'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					form.submit();
+				}
+			});
+		}
+	});
+</script>

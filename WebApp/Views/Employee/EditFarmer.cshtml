@@ -1,7 +1,7 @@
 ﻿@model WebApp.ViewModels.EmployeeViewModels.AddFarmerViewModel
 
 @{
-	ViewData["Title"] = "Create Farmer Profile";
+	ViewData["Title"] = "Edit Farmer Profile";
 }
 
 <style>
@@ -70,59 +70,40 @@
 </style>
 
 <div class="container py-5">
-	<h2 class="text-success fw-bold mb-4">🌱 Create a Farmer Profile</h2>
+	<h2 class="text-success fw-bold mb-4">🌱 Edit a Farmer Profile</h2>
 
 	<div class="card p-5">
-		<form asp-action="AddFarmer" method="post">
+		<form asp-action="UpdateFarmer" method="post">
 			<div class="row g-4">
 
 				<!-- Hidden fields for CreatedByEmployeeId and CreatedOn and FarmerId -->
-				<input type="hidden" asp-for="FarmerId" value="0" />
-				<input type="hidden" asp-for="CreatedByEmployeeId" value="1" />
-				<input type="hidden" asp-for="CreatedOn" value="@DateTime.Now" />
+				<input type="hidden" asp-for="FarmerId" value="@Model.FarmerId" />
+				<input type="hidden" asp-for="CreatedByEmployeeId" value="@Model.CreatedByEmployeeId" />
+				<input type="hidden" asp-for="CreatedOn" value="@Model.CreatedOn" />
+				<input type="hidden" asp-for="Password" value="dummy" />
+				<input type="hidden" asp-for="ConfirmPassword" value="dummy" />
 
 				<div class="col-md-6">
 					<label asp-for="FirstName" class="form-label">🧑‍🌾 First Name</label>
-					<input asp-for="FirstName" class="form-control" />
+					<input asp-for="FirstName" class="form-control" value="@Model.FirstName"/>
 					<span asp-validation-for="FirstName" class="text-danger small"></span>
 				</div>
 
 				<div class="col-md-6">
 					<label asp-for="LastName" class="form-label">🌾 Last Name</label>
-					<input asp-for="LastName" class="form-control" />
+					<input asp-for="LastName" class="form-control" value="@Model.LastName" />
 					<span asp-validation-for="LastName" class="text-danger small"></span>
 				</div>
 
 				<div class="col-12">
 					<label asp-for="Email" class="form-label">📧 Email</label>
-					<input asp-for="Email" class="form-control" />
+					<input asp-for="Email" class="form-control" value="@Model.Email" />
 					<span asp-validation-for="Email" class="text-danger small"></span>
 				</div>
 
-				<div class="col-md-6 position-relative">
-					<label asp-for="Password" class="form-label">🔑 Password</label>
-					<input asp-for="Password" class="form-control password-input" type="password" id="PasswordField" />
-					<span asp-validation-for="Password" class="text-danger small"></span>
-				</div>
-
-				<div class="col-md-6 position-relative">
-					<label asp-for="ConfirmPassword" class="form-label">🔒 Confirm Password</label>
-					<input asp-for="ConfirmPassword" class="form-control password-input" type="password" id="ConfirmPasswordField" />
-					<span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-				</div>
-
-				<div class="col-12 d-flex align-items-center mt-1">
-					<input type="checkbox" id="togglePasswords" class="form-check-input me-2" />
-					<label for="togglePasswords" class="form-label mb-0">Show Passwords</label>
-				</div>
-
-
-				<input type="hidden" asp-for="CreatedByEmployeeId" />
-				<input type="hidden" asp-for="CreatedOn" />
-
 				<div class="col-12 d-flex justify-content-end gap-3 mt-4">
 					<a asp-action="ManageFarmers" class="btn btn-cancel px-4">Cancel</a>
-					<button type="submit" class="btn btn-success px-4">Create Farmer</button>
+					<button type="submit" class="btn btn-success px-4">Update Farmer</button>
 				</div>
 
 			</div>
@@ -134,12 +115,4 @@
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
-
-	<script>
-		document.getElementById('togglePasswords').addEventListener('change', function () {
-			const isChecked = this.checked;
-			document.getElementById('PasswordField').type = isChecked ? 'text' : 'password';
-			document.getElementById('ConfirmPasswordField').type = isChecked ? 'text' : 'password';
-		});
-	</script>
 }
