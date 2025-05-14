@@ -22,6 +22,11 @@ namespace WebApp.Services
 			return _repository.GetByIdAsync(id);
 		}
 
+		public Task<Farmer?> GetFarmerByEmailAsync(string email)
+		{
+			return _repository.GetByEmailAsync(email);
+		}
+
 		public async Task AddFarmerAsync(Farmer farmer)
 		{
 			farmer.CreatedOn = DateTime.UtcNow;
@@ -41,7 +46,7 @@ namespace WebApp.Services
 			await _repository.SaveChangesAsync();
 		}
 
-		public async Task<List<Farmer>> FilterFarmersAsync(string name, int? createdByEmployeeId)
+		public async Task<List<Farmer>> FilterFarmersAsync(string? name, int? createdByEmployeeId)
 		{
 			return await _repository.FilterAsync(f =>
 				(string.IsNullOrEmpty(name) || (f.FirstName + " " + f.LastName).Contains(name, StringComparison.OrdinalIgnoreCase)) &&

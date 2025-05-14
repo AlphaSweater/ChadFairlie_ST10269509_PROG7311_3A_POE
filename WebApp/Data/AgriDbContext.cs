@@ -11,6 +11,7 @@ namespace WebApp.Models
 		public DbSet<Employee> Employees { get; set; }
 		public DbSet<Farmer> Farmers { get; set; }
 		public DbSet<Product> Products { get; set; }
+		public DbSet<Category> Categories { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -27,6 +28,11 @@ namespace WebApp.Models
 				.HasOne(p => p.Farmer)
 				.WithMany()
 				.HasForeignKey(p => p.FarmerId);
+
+			// Configure Categories table
+			modelBuilder.Entity<Category>()
+				.Property(c => c.CreatedOn)
+				.HasDefaultValueSql("CURRENT_TIMESTAMP");
 		}
 	}
 }

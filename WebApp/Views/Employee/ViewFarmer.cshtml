@@ -82,6 +82,37 @@
         </form>
     </div>
 
+    <!-- Filter Section -->
+    <div class="card shadow-sm border-0 mb-4" style="background-color: #f6f4ef;">
+        <div class="card-body">
+            <h5 class="mb-3 text-brown">🔍 Filter Products</h5>
+            <form id="filter-form" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Category</label>
+                    <select id="category" name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach (var category in ViewBag.Categories as List<string>)
+                        {
+                            <option value="@category">@category</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" />
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="button" class="btn btn-success w-100" onclick="fetchFilteredProducts()">Filter</button>
+                    <button type="button" class="btn btn-outline-secondary w-100" onclick="resetFilters()">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Farmer's Products Section -->
     <div>
         <h3 class="product-list-title">🌾 Products by @Model.FullName</h3>
@@ -90,3 +121,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    function fetchFilteredProducts() {
+        const formData = new FormData(document.getElementById("filter-form"));
+        const queryString = new URLSearchParams(formData).toString();
+
+        fetch(`/Employee/GetFilteredProductsByFarmer?farmerId=@Model.FarmerId&${queryString}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("product-list").innerHTML = html;
+            });
+    }
+
+    function resetFilters() {
+        document.getElementById("filter-form").reset();
+        fetchFilteredProducts();
+    }
+</script>

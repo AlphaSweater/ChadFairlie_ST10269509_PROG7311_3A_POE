@@ -28,6 +28,14 @@ namespace WebApp.Repositories
 				.FirstOrDefaultAsync();
 		}
 
+		public async Task<Farmer?> GetByEmailAsync(string email)
+		{
+			return await _context.Farmers
+				.Where(f => f.Email.ToLower() == email.ToLower() && !f.IsDeleted)
+				.Include(f => f.CreatedByEmployee) // Eagerly load the Employee who created the Farmer
+				.FirstOrDefaultAsync();
+		}
+
 		public async Task AddAsync(Farmer farmer)
 		{
 			await _context.Farmers.AddAsync(farmer);

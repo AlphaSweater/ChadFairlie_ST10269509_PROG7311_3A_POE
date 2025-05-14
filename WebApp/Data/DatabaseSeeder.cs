@@ -1,6 +1,7 @@
 ﻿using WebApp.Models;
+using WebApp.Services;
 
-namespace WebApp.Services
+namespace WebApp.Data
 {
 	public static class DatabaseSeeder
 	{
@@ -38,10 +39,10 @@ namespace WebApp.Services
 					new Employee
 					{
 						EmployeeId = 1,
-						FirstName = "John",
-						LastName = "Doe",
-						Email = "john.doe@example.com",
-						PasswordHash = authService.HashPassword("password1"),
+						FirstName = "Admin",
+						LastName = "Guy",
+						Email = "admin@gmail.com",
+						PasswordHash = authService.HashPassword("admin"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -120,120 +121,39 @@ namespace WebApp.Services
 				);
 			}
 
+			// Seed Categories
+			if (!context.Categories.Any())
+			{
+				context.Categories.AddRange(
+					new Category { CategoryId = 1, Name = "Fruit", CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Category { CategoryId = 2, Name = "Vegetable", CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Category { CategoryId = 3, Name = "Livestock", CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Category { CategoryId = 4, Name = "Green Technology", CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Category { CategoryId = 5, Name = "Equipment", CreatedOn = DateTime.UtcNow, IsDeleted = false }
+				);
+			}
+
 			// Seed Products
 			if (!context.Products.Any())
 			{
 				context.Products.AddRange(
-					new Product
-					{
-						ProductId = 1,
-						Name = "Apple",
-						Category = "Fruit",
-						Price = 1.5,
-						FarmerId = 1,
-						Image = LoadImage("apple"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 2,
-						Name = "Banana",
-						Category = "Fruit",
-						Price = 0.8,
-						FarmerId = 2,
-						Image = LoadImage("banana"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 3,
-						Name = "Carrot",
-						Category = "Vegetable",
-						Price = 0.5,
-						FarmerId = 3,
-						Image = LoadImage("carrot"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 4,
-						Name = "Tomato",
-						Category = "Vegetable",
-						Price = 1.2,
-						FarmerId = 4,
-						Image = LoadImage("tomato"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 5,
-						Name = "Potato",
-						Category = "Vegetable",
-						Price = 0.6,
-						FarmerId = 5,
-						Image = LoadImage("potato"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 6,
-						Name = "Strawberry",
-						Category = "Fruit",
-						Price = 2.5,
-						FarmerId = 1,
-						Image = LoadImage("strawberry"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 7,
-						Name = "Cucumber",
-						Category = "Vegetable",
-						Price = 1.0,
-						FarmerId = 2,
-						Image = LoadImage("cucumber"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 8,
-						Name = "Orange",
-						Category = "Fruit",
-						Price = 1.3,
-						FarmerId = 3,
-						Image = LoadImage("orange"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 9,
-						Name = "Lettuce",
-						Category = "Vegetable",
-						Price = 0.9,
-						FarmerId = 4,
-						Image = LoadImage("lettuce"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					},
-					new Product
-					{
-						ProductId = 10,
-						Name = "Blueberry",
-						Category = "Fruit",
-						Price = 3.0,
-						FarmerId = 5,
-						Image = LoadImage("blueberry"),
-						CreatedOn = DateTime.UtcNow,
-						IsDeleted = false
-					}
+					// Fruit & Veg
+					new Product { ProductId = 1, Name = "Apple", Category = "Fruit", Price = 1.5, FarmerId = 1, Image = LoadImage("apple"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Product { ProductId = 2, Name = "Tomato", Category = "Vegetable", Price = 1.2, FarmerId = 2, Image = LoadImage("tomato"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+
+					// Livestock
+					new Product { ProductId = 3, Name = "Angus Cattle", Category = "Livestock", Price = 1200, FarmerId = 3, Image = LoadImage("angus_cattle"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Product { ProductId = 4, Name = "Free-range Chickens (per dozen)", Category = "Livestock", Price = 60, FarmerId = 4, Image = LoadImage("chickens"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Product { ProductId = 5, Name = "Boer Goats", Category = "Livestock", Price = 250, FarmerId = 5, Image = LoadImage("goat"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+
+					// Green Technology
+					new Product { ProductId = 6, Name = "Solar Irrigation Pump", Category = "Green Technology", Price = 3200, FarmerId = 1, Image = LoadImage("solar_pump"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Product { ProductId = 7, Name = "Wind Turbine Kit (Small Farm)", Category = "Green Technology", Price = 5500, FarmerId = 2, Image = LoadImage("wind_turbine"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Product { ProductId = 8, Name = "Biogas Digester Unit", Category = "Green Technology", Price = 4100, FarmerId = 3, Image = LoadImage("biogas_unit"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+
+					// Equipment
+					new Product { ProductId = 9, Name = "Compost Spreader", Category = "Equipment", Price = 750, FarmerId = 4, Image = LoadImage("compost_spreader"), CreatedOn = DateTime.UtcNow, IsDeleted = false },
+					new Product { ProductId = 10, Name = "Tractor (Used)", Category = "Equipment", Price = 8500, FarmerId = 5, Image = LoadImage("tractor"), CreatedOn = DateTime.UtcNow, IsDeleted = false }
 				);
 			}
 

@@ -22,6 +22,11 @@ namespace WebApp.Services
 			return await _employeeRepository.GetByIdAsync(id);
 		}
 
+		public async Task<Employee?> GetEmployeeByEmailAsync(string email)
+		{
+			return await _employeeRepository.GetByEmailAsync(email);
+		}
+
 		public async Task AddEmployeeAsync(Employee employee)
 		{
 			await _employeeRepository.AddAsync(employee);

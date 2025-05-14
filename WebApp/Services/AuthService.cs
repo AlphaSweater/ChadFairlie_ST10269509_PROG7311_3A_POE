@@ -21,8 +21,7 @@ namespace WebApp.Services
 		public async Task<bool> LoginUserAsync(string email, string password)
 		{
 			// Check if the user is a farmer
-			var farmer = (await _farmerService.FilterFarmersAsync(email, null))
-				.FirstOrDefault(f => f.Email.ToLower() == email.ToLower() && !f.IsDeleted);
+			var farmer = await _farmerService.GetFarmerByEmailAsync(email);
 
 			if (farmer != null && VerifyPassword(farmer.PasswordHash, password))
 			{
@@ -33,8 +32,7 @@ namespace WebApp.Services
 			}
 
 			// Check if the user is an employee
-			var employee = (await _employeeService.FilterEmployeesAsync(e => e.Email.ToLower() == email.ToLower() && !e.IsDeleted))
-				.FirstOrDefault();
+			var employee = await _employeeService.GetEmployeeByEmailAsync(email);
 
 			if (employee != null && VerifyPassword(employee.PasswordHash, password))
 			{

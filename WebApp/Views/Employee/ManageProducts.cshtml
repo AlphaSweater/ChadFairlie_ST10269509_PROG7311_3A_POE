@@ -59,9 +59,10 @@
 					<label for="category" class="form-label">Category</label>
 					<select id="category" name="category" class="form-select">
 						<option value="">All Categories</option>
-						<option value="Vegetables">Vegetables</option>
-						<option value="Fruits">Fruits</option>
-						<option value="Grains">Grains</option>
+						@foreach (var category in ViewBag.Categories as List<string>)
+						{
+							<option value="@category">@category</option>
+						}
 					</select>
 				</div>
 				<div class="col-md-2">

@@ -16,6 +16,8 @@ namespace WebApp.Repositories
 
 		Task<List<Product>> FilterAsync(Func<Product, bool> predicate);
 
+		Task<List<Category>> GetAllCategories();
+
 		Task SaveChangesAsync();
 	}
 }

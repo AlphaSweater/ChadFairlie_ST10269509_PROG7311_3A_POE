@@ -67,14 +67,14 @@
 					<label for="searchName" class="form-label">Product Name</label>
 					<input type="text" id="searchName" name="searchName" class="form-control" placeholder="e.g. Spinach" value="@ViewData["searchName"]" />
 				</div>
-				<div class="col-md-3">
-					<label for="category" class="form-label">Product Category</label>
+				<div class="col-md-2">
+					<label for="category" class="form-label">Category</label>
 					<select id="category" name="category" class="form-select">
 						<option value="">All Categories</option>
-						<option value="Vegetables">Vegetables</option>
-						<option value="Fruits">Fruits</option>
-						<option value="Grains">Grains</option>
-						<!-- Add more if needed -->
+						@foreach (var category in ViewBag.Categories as List<string>)
+						{
+							<option value="@category">@category</option>
+						}
 					</select>
 				</div>
 				<div class="col-md-3">

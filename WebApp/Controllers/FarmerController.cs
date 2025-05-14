@@ -31,6 +31,10 @@ namespace WebApp.Controllers
 			// Convert Models to viewModels
 			var allProductsViewModels = allModelProducts.Select(p => new ProductViewModel(p));
 
+			// Fetch distinct categories from the database
+			var categories = await _productService.GetAllCategoriesAsync();
+			ViewBag.Categories = categories.Select(c => c.Name).ToList();
+
 			return View(allProductsViewModels);
 		}
 

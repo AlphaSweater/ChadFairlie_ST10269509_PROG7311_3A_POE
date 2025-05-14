@@ -22,6 +22,11 @@ namespace WebApp.Repositories
 			return await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id && !e.IsDeleted);
 		}
 
+		public async Task<Employee?> GetByEmailAsync(string email)
+		{
+			return await _context.Employees.FirstOrDefaultAsync(e => e.Email.ToLower() == email.ToLower() && !e.IsDeleted);
+		}
+
 		public async Task AddAsync(Employee employee)
 		{
 			await _context.Employees.AddAsync(employee);

@@ -139,17 +139,5 @@ namespace WebApp.Controllers
 		{
 			return View();
 		}
-
-		public IActionResult SkipFarmerLogin()
-		{
-			_authService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
-			return RedirectToAction("Index", "Farmer");
-		}
-
-		public IActionResult SkipAdminLogin()
-		{
-			_authService.SetUserIdRole(1, "Employee"); // Set user ID and role in session
-			return RedirectToAction("Index", "Employee");
-		}
 	}
 }

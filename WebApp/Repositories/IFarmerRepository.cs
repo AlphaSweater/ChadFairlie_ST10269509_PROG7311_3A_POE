@@ -8,6 +8,8 @@ namespace WebApp.Repositories
 
 		Task<Farmer?> GetByIdAsync(int id);
 
+		Task<Farmer?> GetByEmailAsync(string email);
+
 		Task AddAsync(Farmer farmer);
 
 		Task UpdateAsync(Farmer farmer);

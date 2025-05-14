@@ -17,5 +17,7 @@ namespace WebApp.ViewModels.ProductViewModels
 		public DateTime CreatedOn { get; set; } = DateTime.Today;
 
 		public IFormFile ImageFile { get; set; }
+
+		public int FarmerId { get; set; }
 	}
 }

@@ -54,5 +54,11 @@ namespace WebApp.Services
 				(!minPrice.HasValue || p.Price >= minPrice.Value) &&
 				(!maxPrice.HasValue || p.Price <= maxPrice.Value));
 		}
+
+		public async Task<List<Category>> GetAllCategoriesAsync()
+		{
+			var categories = await _repository.GetAllCategories();
+			return categories.Select(c => new Category { Name = c.Name }).ToList();
+		}
 	}
 }

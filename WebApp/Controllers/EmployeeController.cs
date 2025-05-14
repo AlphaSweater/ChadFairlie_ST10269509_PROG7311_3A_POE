@@ -36,9 +36,19 @@ namespace WebApp.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetFilteredFarmers(string? searchName)
+		public async Task<IActionResult> GetFilteredFarmers(string? searchName, string? createdByMe)
 		{
-			var allModelFarmers = await _farmerService.GetAllFarmersAsync();
+			var allModelFarmers = new List<Farmer>();
+
+			if (createdByMe != null && createdByMe.Equals("on"))
+			{
+				var employeeId = _authService.GetUserIdRole().Item1;
+				allModelFarmers = await _farmerService.FilterFarmersAsync(null, employeeId);
+			}
+			else
+			{
+				allModelFarmers = await _farmerService.GetAllFarmersAsync();
+			}
 
 			// Apply filters
 			if (!string.IsNullOrEmpty(searchName))
@@ -66,6 +76,10 @@ namespace WebApp.Controllers
 			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
 
 			var detailedFarmerViewModel = new DetailedFarmerViewModel(farmer, products);
+
+			// Fetch distinct categories from the database
+			var categories = await _productService.GetAllCategoriesAsync();
+			ViewBag.Categories = categories.Select(c => c.Name).ToList();
 
 			return View(detailedFarmerViewModel);
 		}
@@ -197,8 +211,11 @@ namespace WebApp.Controllers
 		public async Task<IActionResult> ManageProducts()
 		{
 			var allModelProducts = await _productService.GetAllProductsAsync();
-
 			var allProductsViewModels = allModelProducts.Select(p => new ProductViewModel(p));
+
+			// Fetch distinct categories from the database
+			var categories = await _productService.GetAllCategoriesAsync();
+			ViewBag.Categories = categories.Select(c => c.Name).ToList();
 
 			return View(allProductsViewModels);
 		}
@@ -232,6 +249,32 @@ namespace WebApp.Controllers
 			}
 
 			return PartialView("_ProductCardList", allProductsViewModels);
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetFilteredProductsByFarmer(int farmerId, string? category, DateTime? startDate, DateTime? endDate)
+		{
+			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+
+			// Apply filters
+			if (!string.IsNullOrEmpty(category))
+			{
+				products = products.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
+			}
+
+			if (startDate.HasValue)
+			{
+				products = products.Where(p => p.CreatedOn >= startDate.Value).ToList();
+			}
+
+			if (endDate.HasValue)
+			{
+				products = products.Where(p => p.CreatedOn <= endDate.Value).ToList();
+			}
+
+			var productViewModels = products.Select(p => new ProductViewModel(p));
+
+			return PartialView("_ProductCardList", productViewModels);
 		}
 	}
 }

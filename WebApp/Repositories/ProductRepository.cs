@@ -68,6 +68,11 @@ namespace WebApp.Repositories
 			);
 		}
 
+		public async Task<List<Category>> GetAllCategories()
+		{
+			return await _context.Categories.ToListAsync();
+		}
+
 		public async Task SaveChangesAsync()
 		{
 			await _context.SaveChangesAsync();

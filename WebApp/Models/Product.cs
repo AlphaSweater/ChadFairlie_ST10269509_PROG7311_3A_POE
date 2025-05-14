@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApp.ViewModels.ProductViewModels;
 
 namespace WebApp.Models
 {
@@ -44,5 +45,30 @@ namespace WebApp.Models
 		// Navigation Property
 		[ForeignKey("FarmerId")]
 		public Farmer Farmer { get; set; }
+
+		// Constructor
+		public Product()
+		{
+			// Default constructor
+		}
+
+		// Constructor to convert ViewModel to Model
+		public Product(AddProductViewModel newProductViewModel)
+		{
+			Name = newProductViewModel.Name;
+			Category = newProductViewModel.Category;
+			Price = (double)newProductViewModel.Price;
+			// Convert IFormFile to byte array
+			if (newProductViewModel.ImageFile != null)
+			{
+				using (var memoryStream = new MemoryStream())
+				{
+					newProductViewModel.ImageFile.CopyTo(memoryStream);
+					Image = memoryStream.ToArray();
+				}
+			}
+			FarmerId = newProductViewModel.FarmerId; // Assuming FarmerId is passed in the ViewModel
+			CreatedOn = DateTime.UtcNow; // Set CreatedOn to current UTC time
+		}
 	}
 }

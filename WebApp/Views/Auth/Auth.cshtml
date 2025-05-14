@@ -183,8 +183,6 @@
 			<img src="~/image/AgriEnergyLogo.svg" alt="AgriEnergy Logo" class="logo" />
 			<div class="title" id="title">Agri Energy Connect</div>
 			<button id="enterButton" class="btn btn-primary mt-4">Enter</button>
-			<a asp-action="SkipFarmerLogin" class="btn btn-primary mt-4">Skip As Farmer</a>
-			<a asp-action="SkipAdminLogin" class="btn btn-primary mt-4">Skip As Admin</a>
         </div>
 
 		<!-- Form Container -->
@@ -220,6 +218,15 @@
 
 				<button type="submit" class="btn btn-primary button-confirm">Let's go →</button>
 				<p class="mt-3"><a href="#" id="showSignUp" class="switch-link">Need to make an account? Sign Up Here!</a></p>
+
+				<!-- Note Section -->
+				<div class="mt-4 p-3 bg-light text-dark rounded">
+					<strong>Note:</strong> Default employee credentials are:
+					<ul>
+						<li>Email: <code>admin@gmail.com</code></li>
+						<li>Password: <code>admin</code></li>
+					</ul>
+				</div>
 			</form>
 
 			@{

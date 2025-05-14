@@ -8,6 +8,8 @@ namespace WebApp.Repositories
 
 		Task<Employee?> GetByIdAsync(int id);
 
+		Task<Employee?> GetByEmailAsync(string email);
+
 		Task AddAsync(Employee employee);
 
 		Task UpdateAsync(Employee employee);
