@@ -16,7 +16,7 @@ Agri-Energy Connect is a web-based platform built using ASP.NET Core 8.0 MVC wit
 - **Frontend**: Razor Pages (ASP.NET Core MVC)
 - **Backend**: ASP.NET Core 8.0 (C#)
 - **Database**: SQLite (no setup required)
-- **ORM**: Dapper (lightweight and fast)
+- **ORM**: MS Entity Framework Core
 - **Architecture**: N-Tier with Repository, Service, and ViewModel Patterns
 - **Dependency Injection**: Built-in ASP.NET Core DI
 
