@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using WebApp.Data;
 using WebApp.Models;
 using WebApp.Repositories;
@@ -14,6 +15,7 @@ namespace WebApp
 
 			// Configure services
 			ConfigureServices(builder);
+			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 
 			var app = builder.Build();
 

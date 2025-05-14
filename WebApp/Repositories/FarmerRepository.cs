@@ -1,42 +1,49 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using WebApp.Models;
 
 namespace WebApp.Repositories
 {
-	public class FarmerRepository : BaseRepository<Farmer>, IFarmerRepository
+	public class FarmerRepository : IFarmerRepository
 	{
-		public FarmerRepository(AgriDbContext context) : base(context)
+		private readonly AgriDbContext _context;
+
+		public FarmerRepository(AgriDbContext context)
 		{
+			_context = context;
 		}
 
-		public override async Task<List<Farmer>> GetAllAsync(params Expression<Func<Farmer, object>>[] includes)
+		public async Task<List<Farmer>> GetAllAsync()
 		{
-			return await base.GetAllAsync(f => f.CreatedByEmployee);
+			return await _context.Farmers
+				.Where(f => !f.IsDeleted)
+				.Include(f => f.CreatedByEmployee) // Eagerly load the Employee who created the Farmer
+				.ToListAsync();
 		}
 
-		public override async Task<Farmer?> GetByIdAsync(int id, params Expression<Func<Farmer, object>>[] includes)
+		public async Task<Farmer?> GetByIdAsync(int id)
 		{
-			return await base.GetByIdAsync(id, f => f.CreatedByEmployee);
+			return await _context.Farmers
+				.Where(f => f.FarmerId == id && !f.IsDeleted)
+				.Include(f => f.CreatedByEmployee) // Eagerly load the Employee who created the Farmer
+				.FirstOrDefaultAsync();
 		}
 
 		public async Task<Farmer?> GetByEmailAsync(string email)
 		{
-			return await _dbSet
-				.Include(f => f.CreatedByEmployee)
-				.FirstOrDefaultAsync(f => f.Email.ToLower() == email.ToLower() && !f.IsDeleted);
+			return await _context.Farmers
+				.Where(f => f.Email.ToLower() == email.ToLower() && !f.IsDeleted)
+				.Include(f => f.CreatedByEmployee) // Eagerly load the Employee who created the Farmer
+				.FirstOrDefaultAsync();
 		}
 
-		protected override string GetIdPropertyName() => "FarmerId";
-
-		public override async Task AddAsync(Farmer farmer)
+		public async Task AddAsync(Farmer farmer)
 		{
-			await _dbSet.AddAsync(farmer);
+			await _context.Farmers.AddAsync(farmer);
 		}
 
-		public override async Task Update(Farmer farmer)
+		public async Task UpdateAsync(Farmer farmer)
 		{
-			var existingFarmer = await _dbSet.FindAsync(farmer.FarmerId);
+			var existingFarmer = await _context.Farmers.FindAsync(farmer.FarmerId);
 			if (existingFarmer != null && !existingFarmer.IsDeleted)
 			{
 				_context.Entry(existingFarmer).CurrentValues.SetValues(farmer);
@@ -44,9 +51,9 @@ namespace WebApp.Repositories
 			}
 		}
 
-		public override async Task DeleteAsync(int id)
+		public async Task DeleteAsync(int id)
 		{
-			var farmer = await _dbSet.FindAsync(id);
+			var farmer = await _context.Farmers.FindAsync(id);
 			if (farmer != null && !farmer.IsDeleted)
 			{
 				farmer.IsDeleted = true;
@@ -57,16 +64,16 @@ namespace WebApp.Repositories
 		public async Task<List<Farmer>> FilterAsync(Func<Farmer, bool> predicate)
 		{
 			return await Task.FromResult(
-				_dbSet
+				_context.Farmers
 					.Where(f => !f.IsDeleted)
-					.Include(f => f.CreatedByEmployee)
+					.Include(f => f.CreatedByEmployee) // Eagerly load the Employee who created the Farmer
 					.AsEnumerable()
 					.Where(predicate)
 					.ToList()
 			);
 		}
 
-		public override async Task SaveChangesAsync()
+		public async Task SaveChangesAsync()
 		{
 			await _context.SaveChangesAsync();
 		}

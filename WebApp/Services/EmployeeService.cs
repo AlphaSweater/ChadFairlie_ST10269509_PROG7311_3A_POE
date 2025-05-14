@@ -102,7 +102,7 @@ namespace WebApp.Services
 
 				ValidateEmployee(employee);
 
-				await _employeeRepository.Update(employee);
+				await _employeeRepository.UpdateAsync(employee);
 				await _employeeRepository.SaveChangesAsync();
 
 				_logger.LogInformation("Employee {EmployeeId} updated successfully", employee.EmployeeId);
@@ -145,7 +145,7 @@ namespace WebApp.Services
 				if (predicate == null)
 					throw new ArgumentNullException(nameof(predicate));
 
-				return await _employeeRepository.FindAsync(e => predicate(e));
+				return await _employeeRepository.FilterAsync(e => predicate(e));
 			}
 			catch (Exception ex)
 			{

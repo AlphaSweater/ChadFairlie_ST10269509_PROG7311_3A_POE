@@ -43,7 +43,7 @@ namespace WebApp.Services
 				if (farmerId <= 0)
 					throw new ArgumentException("Farmer ID must be positive", nameof(farmerId));
 
-				return await _repository.FindAsync(p => p.FarmerId == farmerId);
+				return await _repository.FilterAsync(p => p.FarmerId == farmerId);
 			}
 			catch (Exception ex)
 			{
@@ -103,7 +103,7 @@ namespace WebApp.Services
 
 				ValidateProduct(product);
 
-				await _repository.Update(product);
+				await _repository.UpdateAsync(product);
 				await _repository.SaveChangesAsync();
 
 				_logger.LogInformation("Product {ProductId} updated successfully", product.ProductId);
@@ -146,7 +146,7 @@ namespace WebApp.Services
 				if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
 					throw new ArgumentException("Minimum price cannot be greater than maximum price");
 
-				return await _repository.FindAsync(p =>
+				return await _repository.FilterAsync(p =>
 					(string.IsNullOrEmpty(category) || p.Category.Equals(category, StringComparison.OrdinalIgnoreCase)) &&
 					(!minPrice.HasValue || p.Price >= minPrice.Value) &&
 					(!maxPrice.HasValue || p.Price <= maxPrice.Value));

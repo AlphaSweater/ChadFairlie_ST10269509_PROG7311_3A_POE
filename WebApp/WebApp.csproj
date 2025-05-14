@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Content Update="wwwroot\css\auth-animations.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\image\AgriEnergyLogo.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

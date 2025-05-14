@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using WebApp.Models;
+﻿using WebApp.Models;
 using WebApp.Repositories;
 
 namespace WebApp.Services
@@ -102,7 +101,7 @@ namespace WebApp.Services
 
 				ValidateFarmer(farmer);
 
-				await _repository.Update(farmer);
+				await _repository.UpdateAsync(farmer);
 				await _repository.SaveChangesAsync();
 
 				_logger.LogInformation("Farmer {FarmerId} updated successfully", farmer.FarmerId);
@@ -142,8 +141,8 @@ namespace WebApp.Services
 		{
 			try
 			{
-				return await _repository.FindAsync(f =>
-					(string.IsNullOrEmpty(name) || 
+				return await _repository.FilterAsync(f =>
+					(string.IsNullOrEmpty(name) ||
 					 (f.FirstName + " " + f.LastName).Contains(name, StringComparison.OrdinalIgnoreCase)) &&
 					(!createdByEmployeeId.HasValue || f.CreatedByEmployeeId == createdByEmployeeId.Value));
 			}
