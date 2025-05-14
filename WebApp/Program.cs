@@ -24,7 +24,8 @@ namespace WebApp
 			{
 				var services = scope.ServiceProvider;
 				var context = services.GetRequiredService<AgriDbContext>();
-				DatabaseSeeder.Seed(context);
+				var authService = services.GetRequiredService<AuthService>();
+				DatabaseSeeder.Seed(context, authService);
 			}
 
 			app.Run();
@@ -61,6 +62,9 @@ namespace WebApp
 
 			builder.Services.AddScoped<IFarmerRepository, FarmerRepository>();
 			builder.Services.AddScoped<FarmerService>();
+
+			builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+			builder.Services.AddScoped<EmployeeService>();
 		}
 
 		private static void ConfigureMiddleware(WebApplication app)

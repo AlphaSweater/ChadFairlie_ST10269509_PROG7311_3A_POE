@@ -4,7 +4,6 @@ namespace WebApp.Services
 {
 	public static class DatabaseSeeder
 	{
-
 		public static void ClearDatabase(AgriDbContext context)
 		{
 			// Remove all records from each table
@@ -16,7 +15,7 @@ namespace WebApp.Services
 			context.SaveChanges();
 		}
 
-		public static void Seed(AgriDbContext context)
+		public static void Seed(AgriDbContext context, AuthService authService)
 		{
 			// Ensure the database is created
 			context.Database.EnsureCreated();
@@ -42,7 +41,7 @@ namespace WebApp.Services
 						FirstName = "John",
 						LastName = "Doe",
 						Email = "john.doe@example.com",
-						PasswordHash = "hashedpassword1",
+						PasswordHash = authService.HashPassword("password1"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -52,7 +51,7 @@ namespace WebApp.Services
 						FirstName = "Jane",
 						LastName = "Smith",
 						Email = "jane.smith@example.com",
-						PasswordHash = "hashedpassword2",
+						PasswordHash = authService.HashPassword("password2"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					}
@@ -69,7 +68,7 @@ namespace WebApp.Services
 						FirstName = "Alice",
 						LastName = "Brown",
 						Email = "alice.brown@example.com",
-						PasswordHash = "hashedpassword3",
+						PasswordHash = authService.HashPassword("password3"),
 						CreatedByEmployeeId = 1,
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
@@ -80,7 +79,7 @@ namespace WebApp.Services
 						FirstName = "Bob",
 						LastName = "Green",
 						Email = "bob.green@example.com",
-						PasswordHash = "hashedpassword4",
+						PasswordHash = authService.HashPassword("password4"),
 						CreatedByEmployeeId = 1,
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
@@ -91,7 +90,7 @@ namespace WebApp.Services
 						FirstName = "Charlie",
 						LastName = "White",
 						Email = "charlie.white@example.com",
-						PasswordHash = "hashedpassword5",
+						PasswordHash = authService.HashPassword("password5"),
 						CreatedByEmployeeId = 2,
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
@@ -102,7 +101,7 @@ namespace WebApp.Services
 						FirstName = "Diana",
 						LastName = "Black",
 						Email = "diana.black@example.com",
-						PasswordHash = "hashedpassword6",
+						PasswordHash = authService.HashPassword("password6"),
 						CreatedByEmployeeId = 2,
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
@@ -113,7 +112,7 @@ namespace WebApp.Services
 						FirstName = "Eve",
 						LastName = "Gray",
 						Email = "eve.gray@example.com",
-						PasswordHash = "hashedpassword7",
+						PasswordHash = authService.HashPassword("password7"),
 						CreatedByEmployeeId = 1,
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false

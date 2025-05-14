@@ -166,6 +166,17 @@
 </head>
 
 <body style="opacity: 0; transition: opacity 0.6s ease;" onload="document.body.style.opacity='1'">
+	
+	@if (TempData["ShowLoginForm"] != null)
+	{
+		<div id="triggerLoginForm" data-show="true" style="display:none;"></div>
+	}
+	@if (TempData["ShowSignUpForm"] != null)
+	{
+		<div id="triggerSignUpForm" data-show="true" style="display:none;"></div>
+	}
+
+
 	<div class="auth-page-container" id="authPageContainer">
 		<!-- Logo and Title -->
         <div class="logo-container" id="logoContainer">
@@ -179,37 +190,104 @@
 		<!-- Form Container -->
 		<div class="form-container" id="formContainer">
             <!-- Login Form -->
-            <form id="loginForm" class="form" method="post" action="/Auth/Login">
+			<form id="loginForm" class="form" method="post" action="/Auth/Login">
 				<div class="title">Welcome,<br><span class="text-muted">login to continue</span></div>
-				<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-3" required />
-				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-3" required />
-				@if (ViewBag.LoginError != null)
+
+				<!-- Email Field -->
+				<input name="email" placeholder="Email" class="form-control inputbox mb-1"/>
+
+				<!-- Password Field -->
+				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-1" />
+
+				<!-- Display Login Errors -->
+				@if (TempData["LoginErrors"] != null)
 				{
-					<div id="loginError" class="error-bar">@ViewBag.LoginError</div>
+					<div class="error-bar">
+						<ul>
+							@foreach (var error in (Dictionary<string, string>)TempData["LoginErrors"])
+							{
+								<li>@error.Value</li>
+							}
+						</ul>
+					</div>
 				}
+				@if (TempData["LoginError"] != null)
+				{
+					<div class="error-bar">
+						@TempData["LoginError"]
+					</div>
+				}
+
 				<button type="submit" class="btn btn-primary button-confirm">Let's go →</button>
 				<p class="mt-3"><a href="#" id="showSignUp" class="switch-link">Need to make an account? Sign Up Here!</a></p>
-            </form>
+			</form>
 
-            <!-- Sign-Up Form -->
-            <form id="signUpForm" class="form hidden" method="post" action="/Auth/SignUp">
+			@{
+				Dictionary<string, string> signUpErrors = new();
+				if (TempData["SignUpErrors"] != null)
+				{
+					var json = TempData["SignUpErrors"].ToString();
+					signUpErrors = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+				}
+
+				string generalSignUpError = TempData["SignUpError"] as string;
+				string signUpSuccess = TempData["SignUpSuccess"] as string;
+			}
+
+			<!-- Signup Form -->
+			<form id="signUpForm" class="form hidden" method="post" action="/Auth/SignUp">
 				<div class="title">Welcome employee,<br><span class="text-muted">create an account</span></div>
-				<input type="text" name="name" placeholder="Name" class="form-control inputbox mb-3" required />
-				<input type="text" name="surname" placeholder="Surname" class="form-control inputbox mb-3" required />
-				<input type="email" name="email" placeholder="Email" class="form-control inputbox mb-3" required />
-				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-3" required />
-				<input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control inputbox mb-3" required />
-				@if (ViewBag.SignUpError != null)
+
+				<!-- Name Field -->
+				<input type="text" name="name" placeholder="Name" class="form-control inputbox mb-1"/>
+				@if (signUpErrors.ContainsKey("name"))
 				{
-					<div id="signUpError" class="error-bar">@ViewBag.SignUpError</div>
+					<div class="text-danger small mt-1">@signUpErrors["name"]</div>
 				}
-				@if (ViewBag.SignUpSuccess != null)
+
+				<!-- Surname Field -->
+				<input type="text" name="surname" placeholder="Surname" class="form-control inputbox mb-1"/>
+				@if (signUpErrors.ContainsKey("surname"))
 				{
-					<div id="signUpSuccess" class="error-bar" style="background-color: #d4edda; color: #155724; border-color: #c3e6cb;">@ViewBag.SignUpSuccess</div>
+					<div class="text-danger small mt-1">@signUpErrors["surname"]</div>
 				}
+
+				<!-- Email Field -->
+				<input name="email" placeholder="Email" class="form-control inputbox mb-1"/>
+				@if (signUpErrors.ContainsKey("email"))
+				{
+					<div class="text-danger small mt-1">@signUpErrors["email"]</div>
+				}
+
+				<!-- Password Field -->
+				<input type="password" name="password" placeholder="Password" class="form-control inputbox mb-1"/>
+				@if (signUpErrors.ContainsKey("password"))
+				{
+					<div class="text-danger small mt-1">@signUpErrors["password"]</div>
+				}
+
+				<!-- Confirm Password Field -->
+				<input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control inputbox mb-1"/>
+				@if (signUpErrors.ContainsKey("confirmPassword"))
+				{
+					<div class="text-danger small mt-1">@signUpErrors["confirmPassword"]</div>
+				}
+
+				<!-- General Error Message -->
+				@if (!string.IsNullOrEmpty(generalSignUpError))
+				{
+					<div class="text-danger small mt-2">@generalSignUpError</div>
+				}
+
+				<!-- Success Message -->
+				@if (!string.IsNullOrEmpty(signUpSuccess))
+				{
+					<div class="text-success small mt-2">@signUpSuccess</div>
+				}
+
 				<button type="submit" class="btn btn-primary button-confirm">Sign Up</button>
 				<p class="mt-3"><a href="#" id="showLogin" class="switch-link">Already have an account? Log In!</a></p>
-            </form>
+			</form>
 
 		</div>
 	</div>
@@ -225,19 +303,23 @@
 			const signUpForm = document.getElementById("signUpForm");
 			const showSignUp = document.getElementById("showSignUp");
 			const showLogin = document.getElementById("showLogin");
+			const formContainer = document.getElementById("formContainer"); // Don't forget this!
 
+			// Switch to Sign-Up Form
 			showSignUp.addEventListener("click", (e) => {
 				e.preventDefault();
 				loginForm.classList.add("hidden");
 				signUpForm.classList.remove("hidden");
 			});
 
+			// Switch to Login Form
 			showLogin.addEventListener("click", (e) => {
 				e.preventDefault();
 				signUpForm.classList.add("hidden");
 				loginForm.classList.remove("hidden");
 			});
 
+			// Enter Button Animation
 			enterButton.addEventListener("click", () => {
 				enterButton.classList.add("fade-out");
 
@@ -247,9 +329,26 @@
 					logoContainer.classList.add("form-active");
 					title.classList.add("form-active");
 					formContainer.classList.add("animated", "show"); // trigger animations
-				}, 400); // match transition duration
+				}, 400);
 			});
+
+			// ✅ Auto-open form if server says so
+			const triggerLogin = document.getElementById("triggerLoginForm");
+			const triggerSignUp = document.getElementById("triggerSignUpForm");
+
+			if (triggerLogin || triggerSignUp) {
+				// Simulate the enter button click
+				enterButton.click();
+
+				// Then activate the correct form
+				if (triggerSignUp) {
+					showSignUp.click();
+				} else {
+					showLogin.click();
+				}
+			}
 		});
 	</script>
+
 </body>
 </html>

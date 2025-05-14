@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApp.ViewModels.EmployeeViewModels;
 
 namespace WebApp.Models
 {
@@ -46,5 +47,26 @@ namespace WebApp.Models
 		// Navigation Property
 		[ForeignKey("CreatedByEmployeeId")]
 		public Employee CreatedByEmployee { get; set; }
+
+		// Constructor
+		public Farmer()
+		{
+			// Default constructor
+		}
+
+		// Constructor to convert Model to ViewModel
+		public Farmer(AddFarmerViewModel newFarmerViewModel)
+		{
+			FirstName = newFarmerViewModel.FirstName;
+			LastName = newFarmerViewModel.LastName;
+			Email = newFarmerViewModel.Email;
+
+			// PasswordHash should be hashed before storing it in the database
+
+			PasswordHash = newFarmerViewModel.HashPassword;
+			CreatedOn = DateTime.UtcNow; // Set CreatedOn to current UTC time
+			CreatedByEmployeeId = newFarmerViewModel.CreatedByEmployeeId;
+			IsDeleted = false; // Default value for IsDeleted
+		}
 	}
 }

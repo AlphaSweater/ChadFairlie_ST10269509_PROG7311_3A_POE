@@ -59,14 +59,25 @@
 			background-color: #d2ccc0;
 			color: #5e4c3b;
 		}
+
+	/* Error message styling */
+	.text-danger {
+		color: #dc3545; /* Bootstrap's default red color for errors */
+		font-size: 0.875rem; /* Small font size for better readability */
+		margin-top: 0.25rem;
+		display: block;
+	}
 </style>
 
 <div class="container py-5">
 	<h2 class="text-success fw-bold mb-4">🌱 Create a Farmer Profile</h2>
 
 	<div class="card p-5">
-		<form asp-action="CreateFarmer" method="post">
+		<form asp-action="AddFarmer" method="post">
 			<div class="row g-4">
+
+				<input type="hidden" asp-for="CreatedByEmployeeId" value="1" />
+				<input type="hidden" asp-for="CreatedOn" value="@DateTime.Now" />
 
 				<div class="col-md-6">
 					<label asp-for="FirstName" class="form-label">🧑‍🌾 First Name</label>

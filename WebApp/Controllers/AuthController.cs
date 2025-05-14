@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApp.Models;
 using WebApp.Services;
 
 namespace WebApp.Controllers
 {
 	public class AuthController : Controller
 	{
-		private readonly AuthService _userSessionService;
+		private readonly AuthService _authService;
 
-		public AuthController(AuthService userSessionService)
+		public AuthController(AuthService authService)
 		{
-			_userSessionService = userSessionService;
+			_authService = authService;
 		}
 
 		public IActionResult Auth()
@@ -18,64 +19,137 @@ namespace WebApp.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Login(string email, string password)
+		public async Task<IActionResult> Login(string email, string password)
 		{
-			// Test logic for login
-			if (email == "admin@gmail.com" && password == "password")
+			var errors = new Dictionary<string, string>();
+
+			if (string.IsNullOrEmpty(email))
 			{
-				_userSessionService.SetUserIdRole(1, "Employee"); // Set user ID and role in session
-
-				return RedirectToAction("Index", "Employee");
+				errors["email"] = "Email is required.";
 			}
-			else if (email == "farmer@gmail.com" && password == "password")
+			if (string.IsNullOrEmpty(password))
 			{
-				_userSessionService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
-
-				return RedirectToAction("Index", "Farmer");
+				errors["password"] = "Password is required.";
 			}
-			else
+
+			if (errors.Any())
 			{
-				ViewBag.LoginError = "Invalid email or password.";
-				return View("Auth");
+				// Redirect back to the login page with error messages
+				TempData["LoginErrors"] = errors;
+				TempData["ShowLoginForm"] = true;
+				return RedirectToAction("Auth");
 			}
-		}
 
-		public IActionResult SkipFarmerLogin()
-		{
-			_userSessionService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
-			return RedirectToAction("Index", "Farmer");
-		}
+			var loginSuccess = await _authService.LoginUserAsync(email, password);
+			if (loginSuccess)
+			{
+				var (userId, role) = _authService.GetUserIdRole();
+				// Redirect based on the user's role
+				if (role == "Farmer")
+				{
+					return RedirectToAction("Index", "Farmer");
+				}
+				else if (role == "Employee")
+				{
+					return RedirectToAction("Index", "Employee");
+				}
+			}
 
-		public IActionResult SkipAdminLogin()
-		{
-			_userSessionService.SetUserIdRole(1, "Employee"); // Set user ID and role in session
-			return RedirectToAction("Index", "Employee");
+			// Redirect back to the login page with a generic error message
+			TempData["LoginError"] = "Invalid email or password.";
+			TempData["ShowLoginForm"] = true;
+			return RedirectToAction("Auth");
 		}
 
 		public IActionResult Logout()
 		{
-			_userSessionService.ClearSession();
+			_authService.ClearSession();
 			return RedirectToAction("Auth");
 		}
 
 		[HttpPost]
-		public IActionResult SignUp(string name, string surname, string email, string password, string confirmPassword)
+		public async Task<IActionResult> SignUp(string name, string surname, string email, string password, string confirmPassword)
 		{
-			// Test logic for sign-up
+			var errors = new Dictionary<string, string>();
+
+			if (string.IsNullOrWhiteSpace(name))
+				errors["name"] = "Name is required.";
+
+			if (string.IsNullOrWhiteSpace(surname))
+				errors["surname"] = "Surname is required.";
+
+			if (string.IsNullOrWhiteSpace(email))
+				errors["email"] = "Email is required.";
+			else if (!email.Contains("@"))
+				errors["email"] = "Invalid email address.";
+
+			if (string.IsNullOrWhiteSpace(password))
+				errors["password"] = "Password is required.";
+
 			if (password != confirmPassword)
+				errors["confirmPassword"] = "Passwords do not match.";
+
+			if (errors.Any())
 			{
-				ViewBag.SignUpError = "Passwords do not match.";
-				return View("Auth");
+				TempData["ShowSignUpForm"] = true;
+				TempData["SignUpErrors"] = System.Text.Json.JsonSerializer.Serialize(errors);
+				TempData["SignUpError"] = "Please fix the errors and try again.";
+				return RedirectToAction("Auth");
 			}
 
-			// Simulate successful sign-up
-			ViewBag.SignUpSuccess = "Account created successfully. Please log in.";
-			return View("Auth");
+			// Check if the email already exists in the database
+			var existingUser = _authService.IsEmailInUseAsync(email).Result;
+			if (existingUser)
+			{
+				errors["email"] = "Email is already in use.";
+				TempData["ShowSignUpForm"] = true;
+				TempData["SignUpErrors"] = System.Text.Json.JsonSerializer.Serialize(errors);
+				TempData["SignUpError"] = "Please fix the errors and try again.";
+				return RedirectToAction("Auth");
+			}
+
+			var newEmployee = new Employee
+			{
+				FirstName = name,
+				LastName = surname,
+				Email = email,
+				PasswordHash = password,
+				CreatedOn = DateTime.UtcNow,
+				IsDeleted = false
+			};
+
+			// Register the new employee
+			if (await _authService.RegisterEmployeeAsync(newEmployee))
+			{
+				// successful sign-up
+				TempData["ShowLoginForm"] = true;
+				TempData["LoginSuccess"] = "Account created successfully. Please log in.";
+				return RedirectToAction("Auth");
+			}
+			else
+			{
+				// sign-up failed
+				TempData["ShowSignUpForm"] = true;
+				TempData["SignUpError"] = "An error occurred during sign-up. Please try again.";
+				return RedirectToAction("Auth");
+			}
 		}
 
 		public IActionResult Unauthorized()
 		{
 			return View();
+		}
+
+		public IActionResult SkipFarmerLogin()
+		{
+			_authService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
+			return RedirectToAction("Index", "Farmer");
+		}
+
+		public IActionResult SkipAdminLogin()
+		{
+			_authService.SetUserIdRole(1, "Employee"); // Set user ID and role in session
+			return RedirectToAction("Index", "Employee");
 		}
 	}
 }
