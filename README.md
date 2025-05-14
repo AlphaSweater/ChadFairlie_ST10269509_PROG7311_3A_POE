@@ -40,7 +40,7 @@ Click Code → Download ZIP.
 
 Extract the folder to your desired location.
 
-🧰 2. Open the Project in Visual Studio
+### 🧰 2. Open the Project in Visual Studio
 Launch Visual Studio 2022.
 
 Click Open a project or solution.
@@ -49,7 +49,7 @@ Navigate to the extracted folder.
 
 Open the .sln file (e.g., AgriEnergyConnect.sln).
 
-🔧 3. Build and Run
+### 🔧 3. Build and Run
 Set the main project as the Startup Project (right-click → "Set as Startup Project").
 
 Press F5 or click the Run button.
