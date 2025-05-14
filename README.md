@@ -34,7 +34,7 @@ git clone https://github.com/your-username/agri-energy-connect.git
 
 Or download the ZIP and extract it:
 
-Go to my GitHub repository page. 
+Go to my GitHub repository page. https://github.com/AlphaSweater/ChadFairlie_ST10269509_PROG7311_3A_POE.git
 
 Click Code → Download ZIP.
 
