@@ -1,14 +1,98 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
     ViewData["Title"] = "Employee Dashboard";
 }
 
-<h1>Employee Dashboard</h1>
-<p>Welcome, Employee! This is your dashboard.</p>
-<ul>
-    <li><a href="#">View Tasks</a></li>
-    <li><a href="#">Submit Reports</a></li>
-    <li><a href="#">Check Schedule</a></li>
-</ul>
+<head>
+    <style>
+        body {
+            background-color: #fbf8f3;
+        }
+
+        .text-brown {
+            color: #6f4e37;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #5e8c61;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-message {
+            font-size: 1.2rem;
+            color: #6f4e37;
+            margin-bottom: 30px;
+        }
+
+        .placeholder-card {
+            background-color: #f6f4ef;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(94, 140, 97, 0.2);
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            margin: 10px auto;
+        }
+
+        .placeholder-card h3 {
+            color: #5e8c61;
+            font-weight: bold;
+        }
+
+        .placeholder-card p {
+            color: #6f4e37;
+        }
+
+        .btn-back {
+            margin-top: 20px;
+            font-weight: 600;
+            color: #6f4e37;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: #4e7551;
+            text-decoration: underline;
+        }
+
+        .wip-icon {
+            font-size: 4rem;
+            color: #5e8c61;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<div class="dashboard-container">
+    <div class="wip-icon">🚧</div>
+    <h1 class="dashboard-title">Work in Progress</h1>
+    <p class="dashboard-message">
+        This dashboard is under construction. For now, please use the sidebar to navigate through the rest of the app.
+    </p>
+
+    <div class="placeholder-card">
+        <h3>📊 Dashboard Overview</h3>
+        <p>Placeholder for key metrics and insights, such as total farmers, products, and tasks.</p>
+    </div>
+
+    <div class="placeholder-card">
+        <h3>🗂️ Quick Links</h3>
+        <p>Placeholder for navigation to tasks, reports, and schedules.</p>
+    </div>
+
+    <div class="placeholder-card">
+        <h3>📅 Upcoming Features</h3>
+        <p>Placeholder for upcoming events, updates, and announcements.</p>
+    </div>
+</div>

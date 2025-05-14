@@ -1,62 +1,66 @@
 ﻿@{
-	var role = Context.Session.GetString("UserRole"); // "Farmer" or "Employee"
+    var role = Context.Session.GetString("UserRole"); // "Farmer" or "Employee"
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    // Check if the current page is part of the "Manage" section
+    var isManageSection = (role == "Farmer" && (currentAction == "ManageProducts" || currentAction == "Profile")) ||
+                          (role == "Employee" && (currentAction == "ManageProducts" || currentAction == "ManageFarmers" || currentAction == "Profile"));
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - Agri Energy Connect</title>
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Agri Energy Connect</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
 </head>
 <body>
-	<div class="d-flex">
-		<!-- Sidebar -->
-		<nav id="sidebar" class="sidebar" style="top: 0;">
-			<h4 class="text-white ">Agri Energy Connect</h4>
-			<ul class="nav flex-column">
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar" style="top: 0;">
+            <h4 class="text-white">Agri Energy Connect</h4>
+            <ul class="nav flex-column">
 
-				@if (role == "Farmer")
-				{
-					<li class="nav-item mb-2">
-						<a class="nav-link text-white" asp-controller="Farmer" asp-action="Index">Dashboard</a>
-					</li>
-				}
-				else if (role == "Employee")
-				{
-					<li class="nav-item mb-2">
-						<a class="nav-link text-white" asp-controller="Employee" asp-action="Index">Dashboard</a>
-					</li>
-				}
+                @if (role == "Farmer")
+                {
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white" asp-controller="Farmer" asp-action="Index">Dashboard</a>
+                    </li>
+                }
+                else if (role == "Employee")
+                {
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white" asp-controller="Employee" asp-action="Index">Dashboard</a>
+                    </li>
+                }
 
-				<li class="nav-item mb-2">
-					<a class="nav-link text-white" data-bs-toggle="collapse" href="#manageSubmenu" role="button" aria-expanded="false" aria-controls="manageSubmenu">
-						Manage
-					</a>
-					<div class="collapse ps-3" id="manageSubmenu">
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white manage-tab" data-bs-toggle="collapse" href="#manageSubmenu" role="button" aria-expanded="@isManageSection.ToString().ToLower()" aria-controls="manageSubmenu">
+                        Manage
+                    </a>
+                    <div class="collapse ps-3 @((isManageSection ? "show" : ""))" id="manageSubmenu">
 
-						@if (role == "Farmer")
-						{
-							<a class="nav-link text-white" asp-controller="Farmer" asp-action="ManageProducts">My Products</a>
-							<a class="nav-link text-white" asp-controller="Farmer" asp-action="Profile">My Profile</a>
-						}
-						else if (role == "Employee")
-						{
-							<a class="nav-link text-white" asp-controller="Employee" asp-action="ManageProducts">All Products</a>
-							<a class="nav-link text-white" asp-controller="Employee" asp-action="ManageFarmers">All Farmers</a>
-							<a class="nav-link text-white" asp-controller="Employee" asp-action="Profile">My Profile</a>
-						}
+                        @if (role == "Farmer")
+                        {
+                            <a class="nav-link text-white @(currentAction == "ManageProducts" ? "active" : "")" asp-controller="Farmer" asp-action="ManageProducts">My Products</a>
+                        }
+                        else if (role == "Employee")
+                        {
+                            <a class="nav-link text-white @(currentAction == "ManageProducts" ? "active" : "")" asp-controller="Employee" asp-action="ManageProducts">All Products</a>
+                            <a class="nav-link text-white @(currentAction == "ManageFarmers" ? "active" : "")" asp-controller="Employee" asp-action="ManageFarmers">All Farmers</a>
+                        }
 
-					</div>
-				</li>
+                    </div>
+                </li>
 
-				<li class="nav-item">
-					<a class="nav-link text-white" asp-controller="Auth" asp-action="Logout">Logout</a>
-				</li>
-			</ul>
-		</nav>
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="Auth" asp-action="Logout">Logout</a>
+                </li>
+            </ul>
+        </nav>
 
         <!-- Main Content -->
         <div class="main-content flex-grow-1 p-4">
@@ -64,12 +68,12 @@
                 @RenderBody()
             </main>
         </div>
-	</div>
+    </div>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	@await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

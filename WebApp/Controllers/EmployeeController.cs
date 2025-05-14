@@ -54,6 +54,22 @@ namespace WebApp.Controllers
 			return PartialView("_FarmerCardList", farmerViewModels);
 		}
 
+		public async Task<IActionResult> ViewFarmer(int farmerId)
+		{
+			var farmer = await _farmerService.GetFarmerByIdAsync(farmerId);
+
+			if (farmer == null)
+			{
+				return NotFound(); // Handle the case where the farmer is not found
+			}
+
+			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+
+			var detailedFarmerViewModel = new DetailedFarmerViewModel(farmer, products);
+
+			return View(detailedFarmerViewModel);
+		}
+
 		[HttpGet]
 		public IActionResult AddFarmer()
 		{

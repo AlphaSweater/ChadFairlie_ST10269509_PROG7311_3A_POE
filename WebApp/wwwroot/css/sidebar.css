@@ -51,6 +51,32 @@
 			display: flex;
 		}
 
+	/* Highlight the Manage tab to indicate it's clickable */
+	.sidebar .manage-tab {
+		font-weight: bold;
+		position: relative;
+	}
+
+		.sidebar .manage-tab::after {
+			content: "▼";
+			position: absolute;
+			right: 20px;
+			font-size: 0.8rem;
+			transition: transform 0.3s ease;
+		}
+
+		.sidebar .manage-tab[aria-expanded="true"]::after {
+			transform: rotate(180deg);
+		}
+
+	/* Highlight active submenu item */
+	.sidebar .submenu a.active {
+		background-color: #5e8c61;
+		color: #d4edda;
+		font-weight: bold;
+		border-left: 4px solid #d4edda;
+	}
+
 /* Main content area */
 .main-content {
 	margin-left: 220px; /* Same as sidebar width */
