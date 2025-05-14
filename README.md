@@ -52,6 +52,8 @@ Open the .sln file (e.g., AgriEnergyConnect.sln).
 ### 🔧 3. Build and Run
 Set the main project as the Startup Project (right-click → "Set as Startup Project").
 
+Clean and Build the project.
+
 Press F5 or click the Run button.
 
 The app should open in your browser at https://localhost:xxxx.
