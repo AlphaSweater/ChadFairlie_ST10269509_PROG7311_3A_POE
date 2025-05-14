@@ -11,7 +11,7 @@ namespace WebApp.Controllers
 	[RoleAuthorize("Farmer")]
 	public class FarmerController : BaseController
 	{
-		private readonly AuthService _userSessionService;
+		private readonly AuthService _authService;
 		private readonly ProductService _productService;
 
 		/// <summary>
@@ -21,7 +21,7 @@ namespace WebApp.Controllers
 		/// <param name="productService">Service for managing products.</param>
 		public FarmerController(AuthService userSessionService, ProductService productService)
 		{
-			_userSessionService = userSessionService;
+			_authService = userSessionService;
 			_productService = productService;
 		}
 
@@ -38,7 +38,7 @@ namespace WebApp.Controllers
 		public async Task<IActionResult> ManageProducts()
 		{
 			// Get the current farmer's ID from the session
-			var farmerId = _userSessionService.GetUserIdRole().Item1;
+			var farmerId = _authService.GetUserIdRole().Item1;
 
 			// Retrieve all products created by the farmer
 			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
@@ -62,7 +62,7 @@ namespace WebApp.Controllers
 		public async Task<IActionResult> GetFilteredProducts(string? searchName, string? category, DateTime? createdDate)
 		{
 			// Get the current farmer's ID from the session
-			var farmerId = _userSessionService.GetUserIdRole().Item1;
+			var farmerId = _authService.GetUserIdRole().Item1;
 
 			// Retrieve all products created by the farmer
 			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
