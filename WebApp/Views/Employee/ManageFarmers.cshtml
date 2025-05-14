@@ -59,52 +59,40 @@
 	<!-- Filter/Search -->
 	<div class="card shadow-sm mb-4">
 		<div class="card-body">
-			<h5 class="mb-3 text-brown">🔎 Filter Farmers</h5>
-			<form id="filter-form" method="get" asp-action="ManageFarmers" class="row g-3">
-				<div class="col-md-5">
-					<label for="searchName" class="form-label">Name or Email</label>
-					<input type="text" id="searchName" name="searchName" class="form-control" value="@ViewData["searchName"]" placeholder="e.g. Sarah or sarah@email.com" />
+			<h5 class="mb-3 text-brown">🔍 Filter Products</h5>
+			<form id="filter-form" method="get" asp-action="ManageFarmers" class="row g-3 justify-content-between">
+				<div class="col-md-6 col-lg-4">
+					<label for="searchName" class="form-label">Search by Name or Email</label>
+					<input type="text" id="searchName" name="searchName" class="form-control border-start-0" value="@ViewData["searchName"]" placeholder="e.g. Sarah or sarah@email.com" />
 				</div>
-				<div class="col-md-2 align-self-end">
+
+				<div class="col-md-4 col-lg-4 align-content-end">
+					<label for="createdByMe" class="form-label">Only Show Created by Me  </label>
+					<input type="checkbox" id="createdByMe" name="createdByMe" class="form-check-input" />
+				</div>
+
+				<div class="col-md-2 col-lg-2 d-flex align-items-end justify-content-end">
 					<a href="@Url.Action("ManageFarmers", "Farmer")" class="btn btn-outline-secondary w-100">Clear</a>
 				</div>
 			</form>
 		</div>
 	</div>
 
+
 	<!-- Farmer Cards -->
-	<div id="farmer-list" class="row">
-		@if (Model.Any())
-		{
-			foreach (var farmer in Model)
-			{
-				<div class="col-md-4 mb-4">
-					<div class="card h-100 p-3">
-						<div class="card-body">
-							<h5 class="card-title text-success">@farmer.FirstName @farmer.LastName</h5>
-							<p class="card-text"><strong>Email:</strong> @farmer.Email</p>
-							<p class="card-text text-muted"><small>Created: @(farmer.CreatedOn?.ToString("yyyy-MM-dd") ?? "N/A")</small></p>
-						</div>
-						<div class="card-footer bg-transparent border-0 d-flex justify-content-between">
-							<a asp-action="Edit" asp-route-id="@farmer.FarmerId" class="btn btn-sm btn-outline-success">Edit</a>
-							<a asp-action="Delete" asp-route-id="@farmer.FarmerId" class="btn btn-sm btn-outline-danger">Delete</a>
-						</div>
-					</div>
-				</div>
-			}
-		}
-		else
-		{
-			<div class="col-12">
-				<div class="alert alert-info text-center">
-					No farmers found matching your filters.
-				</div>
-			</div>
-		}
+	<div id="farmer-list">
+		@Html.Partial("_FarmerCardList", Model)
 	</div>
 </div>
 
 <script>
+	const filterForm = document.getElementById("filter-form");
+	const inputs = filterForm.querySelectorAll("input");
+
+	inputs.forEach(input => {
+		input.addEventListener("input", debounce(fetchFilteredFarmers, 300));
+	});
+
 	function debounce(func, delay) {
 		let timer;
 		return function (...args) {
@@ -114,44 +102,21 @@
 	}
 
 	function fetchFilteredFarmers() {
-		const formData = new FormData(document.getElementById("filter-form"));
+		const formData = new FormData(filterForm);
 		const queryString = new URLSearchParams(formData).toString();
 
-		fetch(`/Farmer/GetFilteredFarmers?${queryString}`)
-			.then(response => response.json())
-			.then(data => {
+		fetch(`/Employee/GetFilteredFarmers?${queryString}`)
+			.then(res => res.text())
+			.then(html => {
 				const farmerList = document.getElementById("farmer-list");
-				farmerList.innerHTML = "";
-
-				if (data.length === 0) {
-					farmerList.innerHTML = `
-						<div class="col-12">
-							<div class="alert alert-info text-center">No farmers found matching your filters.</div>
-						</div>`;
-					return;
-				}
-
-				data.forEach(farmer => {
-					const card = `
-						<div class="col-md-4 mb-4">
-							<div class="card h-100 p-3">
-								<div class="card-body">
-									<h5 class="card-title">${farmer.firstName} ${farmer.lastName}</h5>
-									<p class="card-text"><strong>Email:</strong> ${farmer.email}</p>
-									<p class="card-text text-muted"><small>Created: ${farmer.createdOn ? new Date(farmer.createdOn).toLocaleDateString() : "N/A"}</small></p>
-								</div>
-								<div class="card-footer d-flex justify-content-between">
-									<a href="/Farmer/Edit/${farmer.farmerId}" class="btn btn-sm btn-outline-success">Edit</a>
-									<a href="/Farmer/Delete/${farmer.farmerId}" class="btn btn-sm btn-outline-danger">Delete</a>
-								</div>
-							</div>
-						</div>`;
-					farmerList.insertAdjacentHTML("beforeend", card);
-				});
+				farmerList.innerHTML = html;
 			});
 	}
 
-	document.querySelectorAll("#filter-form input").forEach(input => {
-		input.addEventListener("input", debounce(fetchFilteredFarmers, 300));
+	// Handle the "Clear" button
+	document.querySelector(".btn-outline-secondary").addEventListener("click", function (e) {
+		e.preventDefault();
+		filterForm.reset(); // Reset the form fields
+		fetchFilteredProducts(); // Fetch all products
 	});
 </script>

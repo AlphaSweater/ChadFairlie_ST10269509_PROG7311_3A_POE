@@ -9,13 +9,15 @@ namespace WebApp.Controllers
 	[RoleAuthorize("Employee")]
 	public class EmployeeController : BaseController
 	{
-		private readonly UserSessionService _userSessionService;
+		private readonly AuthService _userSessionService;
 		private readonly ProductService _productService;
+		private readonly FarmerService _farmerService;
 
-		public EmployeeController(UserSessionService userSessionService, ProductService productService)
+		public EmployeeController(AuthService userSessionService, ProductService productService, FarmerService farmerService)
 		{
 			_userSessionService = userSessionService;
 			_productService = productService;
+			_farmerService = farmerService;
 		}
 
 		public IActionResult Index()
@@ -25,17 +27,30 @@ namespace WebApp.Controllers
 
 		public async Task<IActionResult> ManageFarmers()
 		{
-			// TODO: Replace with actual data fetching logic
-			var farmers = new List<FarmerViewModel>();
-			// Example: farmers = _farmerService.GetAllFarmersForEmployee();
+			var allModelFarmers = await _farmerService.GetAllFarmersAsync();
 
-			return View(farmers);
+			var allFarmersViewModels = allModelFarmers.Select(f => new FarmerViewModel(f));
+
+			return View(allFarmersViewModels);
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetFilteredFarmers(string? searchName, string? location, DateTime? createdDate)
+		public async Task<IActionResult> GetFilteredFarmers(string? searchName)
 		{
-			return View();
+			var allModelFarmers = await _farmerService.GetAllFarmersAsync();
+
+			// Apply filters
+			if (!string.IsNullOrEmpty(searchName))
+			{
+				allModelFarmers = allModelFarmers.Where(f =>
+					f.FirstName.Contains(searchName, StringComparison.OrdinalIgnoreCase) ||
+					f.LastName.Contains(searchName, StringComparison.OrdinalIgnoreCase) ||
+					f.Email.Contains(searchName, StringComparison.OrdinalIgnoreCase)).ToList();
+			}
+
+			var farmerViewModels = allModelFarmers.Select(f => new FarmerViewModel(f));
+
+			return PartialView("_FarmerCardList", farmerViewModels);
 		}
 
 		public IActionResult AddFarmer()

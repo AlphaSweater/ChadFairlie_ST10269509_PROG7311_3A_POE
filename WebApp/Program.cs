@@ -53,10 +53,14 @@ namespace WebApp
 			builder.Services.AddHttpContextAccessor();
 
 			// Add custom services
-			builder.Services.AddScoped<UserSessionService>();
+			builder.Services.AddScoped<AuthService>();
 
+			// Add repositories and services
 			builder.Services.AddScoped<IProductRepository, ProductRepository>();
 			builder.Services.AddScoped<ProductService>();
+
+			builder.Services.AddScoped<IFarmerRepository, FarmerRepository>();
+			builder.Services.AddScoped<FarmerService>();
 		}
 
 		private static void ConfigureMiddleware(WebApplication app)

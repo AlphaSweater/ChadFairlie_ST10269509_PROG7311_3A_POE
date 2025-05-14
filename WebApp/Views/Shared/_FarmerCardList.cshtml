@@ -1,0 +1,29 @@
+﻿@model IEnumerable<WebApp.ViewModels.EmployeeViewModels.FarmerViewModel>
+
+<style>
+	.farmer-card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+		justify-content: center;
+		gap: 15px;
+		padding: 10px;
+	}
+</style>
+
+@if (!Model.Any())
+{
+	<div class="col-12">
+		<div class="alert alert-info text-center">
+			No farmers found matching your filters.
+		</div>
+	</div>
+}
+else
+{
+	<div class="farmer-card-grid">
+		@foreach (var farmer in Model)
+		{
+			@Html.Partial("_FarmerCard", farmer)
+		}
+	</div>
+}

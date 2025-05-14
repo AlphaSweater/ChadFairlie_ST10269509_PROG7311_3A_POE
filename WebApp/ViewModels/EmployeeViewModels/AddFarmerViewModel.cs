@@ -16,6 +16,9 @@ namespace WebApp.ViewModels.EmployeeViewModels
 		[Required, DataType(DataType.Password)]
 		public string Password { get; set; }
 
+		[Required, DataType(DataType.Password), Compare("Password", ErrorMessage = "Passwords do not match.")]
+		public string ConfirmPassword { get; set; }
+
 		public DateTime CreatedOn { get; set; } = DateTime.Now;
 
 		public int CreatedByEmployeeId { get; set; } // set in the controller/server

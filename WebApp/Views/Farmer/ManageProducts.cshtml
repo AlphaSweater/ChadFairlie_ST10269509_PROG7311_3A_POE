@@ -113,15 +113,15 @@
 
 	// Function to fetch and update the product list
 	function fetchFilteredProducts() {
-	const formData = new FormData(filterForm);
-	const queryString = new URLSearchParams(formData).toString();
+		const formData = new FormData(filterForm);
+		const queryString = new URLSearchParams(formData).toString();
 
-	fetch(`/Farmer/GetFilteredProducts?${queryString}`)
-		.then(res => res.text())
-		.then(html => {
-			const productList = document.getElementById("product-list");
-			productList.innerHTML = html;
-		});
+		fetch(`/Farmer/GetFilteredProducts?${queryString}`)
+			.then(res => res.text())
+			.then(html => {
+				const productList = document.getElementById("product-list");
+				productList.innerHTML = html;
+			});
 	}
 
 	// Handle the "Clear" button

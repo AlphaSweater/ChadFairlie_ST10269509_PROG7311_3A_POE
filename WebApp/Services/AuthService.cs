@@ -1,10 +1,10 @@
 ﻿namespace WebApp.Services
 {
-	public class UserSessionService
+	public class AuthService
 	{
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public UserSessionService(IHttpContextAccessor httpContextAccessor)
+		public AuthService(IHttpContextAccessor httpContextAccessor)
 		{
 			_httpContextAccessor = httpContextAccessor;
 		}

@@ -7,9 +7,9 @@ namespace WebApp.Controllers
 {
 	public class ProductController : BaseController
 	{
-		private readonly UserSessionService _userSessionService;
+		private readonly AuthService _userSessionService;
 
-		public ProductController(UserSessionService userSessionService)
+		public ProductController(AuthService userSessionService)
 		{
 			_userSessionService = userSessionService;
 		}

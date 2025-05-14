@@ -8,10 +8,10 @@ namespace WebApp.Controllers
 	[RoleAuthorize("Farmer")]
 	public class FarmerController : BaseController
 	{
-		private readonly UserSessionService _userSessionService;
+		private readonly AuthService _userSessionService;
 		private readonly ProductService _productService;
 
-		public FarmerController(UserSessionService userSessionService, ProductService productService)
+		public FarmerController(AuthService userSessionService, ProductService productService)
 		{
 			_userSessionService = userSessionService;
 			_productService = productService;

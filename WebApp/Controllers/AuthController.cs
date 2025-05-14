@@ -5,9 +5,9 @@ namespace WebApp.Controllers
 {
 	public class AuthController : Controller
 	{
-		private readonly UserSessionService _userSessionService;
+		private readonly AuthService _userSessionService;
 
-		public AuthController(UserSessionService userSessionService)
+		public AuthController(AuthService userSessionService)
 		{
 			_userSessionService = userSessionService;
 		}
