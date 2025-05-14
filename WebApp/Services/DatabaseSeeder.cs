@@ -4,10 +4,33 @@ namespace WebApp.Services
 {
 	public static class DatabaseSeeder
 	{
+
+		public static void ClearDatabase(AgriDbContext context)
+		{
+			// Remove all records from each table
+			context.Products.RemoveRange(context.Products);
+			context.Farmers.RemoveRange(context.Farmers);
+			context.Employees.RemoveRange(context.Employees);
+
+			// Save changes to apply deletions
+			context.SaveChanges();
+		}
+
 		public static void Seed(AgriDbContext context)
 		{
 			// Ensure the database is created
 			context.Database.EnsureCreated();
+
+			// Helper method to load image as byte array
+			byte[]? LoadImage(string productName)
+			{
+				string imagePath = Path.Combine("wwwroot", "image", "seeds", $"{productName.ToLower()}.jpg");
+				if (File.Exists(imagePath))
+				{
+					return File.ReadAllBytes(imagePath);
+				}
+				return null;
+			}
 
 			// Seed Employees
 			if (!context.Employees.Any())
@@ -109,6 +132,7 @@ namespace WebApp.Services
 						Category = "Fruit",
 						Price = 1.5,
 						FarmerId = 1,
+						Image = LoadImage("apple"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -119,6 +143,7 @@ namespace WebApp.Services
 						Category = "Fruit",
 						Price = 0.8,
 						FarmerId = 2,
+						Image = LoadImage("banana"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -129,6 +154,7 @@ namespace WebApp.Services
 						Category = "Vegetable",
 						Price = 0.5,
 						FarmerId = 3,
+						Image = LoadImage("carrot"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -139,6 +165,7 @@ namespace WebApp.Services
 						Category = "Vegetable",
 						Price = 1.2,
 						FarmerId = 4,
+						Image = LoadImage("tomato"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -149,6 +176,7 @@ namespace WebApp.Services
 						Category = "Vegetable",
 						Price = 0.6,
 						FarmerId = 5,
+						Image = LoadImage("potato"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -159,6 +187,7 @@ namespace WebApp.Services
 						Category = "Fruit",
 						Price = 2.5,
 						FarmerId = 1,
+						Image = LoadImage("strawberry"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -169,6 +198,7 @@ namespace WebApp.Services
 						Category = "Vegetable",
 						Price = 1.0,
 						FarmerId = 2,
+						Image = LoadImage("cucumber"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -179,6 +209,7 @@ namespace WebApp.Services
 						Category = "Fruit",
 						Price = 1.3,
 						FarmerId = 3,
+						Image = LoadImage("orange"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -189,6 +220,7 @@ namespace WebApp.Services
 						Category = "Vegetable",
 						Price = 0.9,
 						FarmerId = 4,
+						Image = LoadImage("lettuce"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					},
@@ -199,6 +231,7 @@ namespace WebApp.Services
 						Category = "Fruit",
 						Price = 3.0,
 						FarmerId = 5,
+						Image = LoadImage("blueberry"),
 						CreatedOn = DateTime.UtcNow,
 						IsDeleted = false
 					}

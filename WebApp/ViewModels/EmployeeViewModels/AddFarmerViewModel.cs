@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApp.ViewModels.Employee
+namespace WebApp.ViewModels.EmployeeViewModels
 {
 	public class AddFarmerViewModel
 	{

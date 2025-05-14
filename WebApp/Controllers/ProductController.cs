@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApp.Controllers.Filters;
 using WebApp.Services;
-using WebApp.ViewModels.Product;
+using WebApp.ViewModels.ProductViewModels;
 
 namespace WebApp.Controllers
 {

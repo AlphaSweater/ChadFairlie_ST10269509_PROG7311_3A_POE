@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApp.Controllers.Filters;
 using WebApp.Services;
-using WebApp.ViewModels.Employee;
-using WebApp.ViewModels.Product;
+using WebApp.ViewModels.ProductViewModels;
 
 namespace WebApp.Controllers
 {
@@ -10,10 +9,12 @@ namespace WebApp.Controllers
 	public class FarmerController : BaseController
 	{
 		private readonly UserSessionService _userSessionService;
+		private readonly ProductService _productService;
 
-		public FarmerController(UserSessionService userSessionService)
+		public FarmerController(UserSessionService userSessionService, ProductService productService)
 		{
 			_userSessionService = userSessionService;
+			_productService = productService;
 		}
 
 		public async Task<IActionResult> Index()
@@ -23,70 +24,42 @@ namespace WebApp.Controllers
 
 		public async Task<IActionResult> ManageProducts()
 		{
-			var allProducts = await GetFarmerProductsAsync();
-			return View(allProducts);
+			// Filter products by the logged-in farmer's ID
+			var farmerId = _userSessionService.GetUserIdRole().Item1;
+			var allModelProducts = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+
+			// Convert Models to viewModels
+			var allProductsViewModels = allModelProducts.Select(p => new ProductViewModel(p));
+
+			return View(allProductsViewModels);
 		}
 
 		[HttpGet]
 		public async Task<IActionResult> GetFilteredProducts(string? searchName, string? category, DateTime? createdDate)
 		{
-			var allProducts = await GetFarmerProductsAsync();
+			var farmerId = _userSessionService.GetUserIdRole().Item1;
+			var allModelProducts = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
+
+			// Convert Models to viewModels
+			var allProductsViewModels = allModelProducts.Select(p => new ProductViewModel(p));
 
 			// Apply filters
 			if (!string.IsNullOrEmpty(searchName))
 			{
-				allProducts = allProducts.Where(p => p.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase));
+				allProductsViewModels = allProductsViewModels.Where(p => p.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase));
 			}
 
 			if (!string.IsNullOrEmpty(category))
 			{
-				allProducts = allProducts.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+				allProductsViewModels = allProductsViewModels.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
 			}
 
 			if (createdDate.HasValue)
 			{
-				allProducts = allProducts.Where(p => p.CreatedOn?.Date == createdDate.Value.Date);
+				allProductsViewModels = allProductsViewModels.Where(p => p.CreatedOn?.Date == createdDate.Value.Date);
 			}
 
-			return PartialView("_ProductCardList", allProducts);
-		}
-
-		private Task<IEnumerable<ProductViewModel>> GetFarmerProductsAsync()
-		{
-			// Simulate fetching data (replace with actual database/service logic)
-			var products = new List<ProductViewModel>
-			{
-				new ProductViewModel
-				{
-					ProductId = 1,
-					Name = "Tomatoes",
-					Category = "Vegetables",
-					Price = 20.5,
-					CreatedBy = new FarmerViewModel {
-						FarmerId = 2,
-						FirstName = "John",
-						LastName = "Doe",
-						Email = "John@farmer.co.za"
-					},
-					CreatedOn = DateTime.Now.AddDays(-10)
-				},
-				new ProductViewModel
-				{
-					ProductId = 2,
-					Name = "Apples",
-					Category = "Fruits",
-					Price = 15.0,
-					CreatedBy = new FarmerViewModel {
-						FarmerId = 2,
-						FirstName = "John",
-						LastName = "Doe",
-						Email = "John@farmer.co.za"
-					},
-					CreatedOn = DateTime.Now.AddDays(-5)
-				}
-			};
-
-			return Task.FromResult(products.AsEnumerable());
+			return PartialView("_ProductCardList", allProductsViewModels);
 		}
 	}
 }

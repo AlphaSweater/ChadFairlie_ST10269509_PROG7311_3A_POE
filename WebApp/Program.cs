@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
+using WebApp.Repositories;
 using WebApp.Services;
 
 namespace WebApp
@@ -53,6 +54,9 @@ namespace WebApp
 
 			// Add custom services
 			builder.Services.AddScoped<UserSessionService>();
+
+			builder.Services.AddScoped<IProductRepository, ProductRepository>();
+			builder.Services.AddScoped<ProductService>();
 		}
 
 		private static void ConfigureMiddleware(WebApplication app)
