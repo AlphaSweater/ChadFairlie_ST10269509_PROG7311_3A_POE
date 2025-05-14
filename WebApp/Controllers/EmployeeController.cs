@@ -7,6 +7,9 @@ using WebApp.ViewModels.ProductViewModels;
 
 namespace WebApp.Controllers
 {
+	/// <summary>
+	/// Controller responsible for managing employee-related actions, including managing farmers and products.
+	/// </summary>
 	[RoleAuthorize("Employee")]
 	public class EmployeeController : BaseController
 	{
@@ -14,189 +17,159 @@ namespace WebApp.Controllers
 		private readonly ProductService _productService;
 		private readonly FarmerService _farmerService;
 
-		public EmployeeController(AuthService userSessionService, ProductService productService, FarmerService farmerService)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EmployeeController"/> class.
+		/// </summary>
+		/// <param name="authService">Service for authentication-related operations.</param>
+		/// <param name="productService">Service for managing products.</param>
+		/// <param name="farmerService">Service for managing farmers.</param>
+		public EmployeeController(AuthService authService, ProductService productService, FarmerService farmerService)
 		{
-			_authService = userSessionService;
+			_authService = authService;
 			_productService = productService;
 			_farmerService = farmerService;
 		}
 
-		public IActionResult Index()
-		{
-			return View();
-		}
+		/// <summary>
+		/// Displays the employee dashboard.
+		/// </summary>
+		/// <returns>The dashboard view.</returns>
+		public IActionResult Index() => View();
 
+		/// <summary>
+		/// Displays a list of all farmers.
+		/// </summary>
+		/// <returns>The view with a list of farmers.</returns>
 		public async Task<IActionResult> ManageFarmers()
 		{
-			var allModelFarmers = await _farmerService.GetAllFarmersAsync();
-
-			var allFarmersViewModels = allModelFarmers.Select(f => new FarmerViewModel(f));
-
-			return View(allFarmersViewModels);
+			var farmers = await _farmerService.GetAllFarmersAsync();
+			var viewModels = farmers.Select(f => new FarmerViewModel(f));
+			return View(viewModels);
 		}
 
+		/// <summary>
+		/// Filters farmers based on search criteria.
+		/// </summary>
+		/// <param name="searchName">The name to search for.</param>
+		/// <param name="createdByMe">Whether to filter by farmers created by the current employee.</param>
+		/// <returns>A partial view with the filtered list of farmers.</returns>
 		[HttpGet]
 		public async Task<IActionResult> GetFilteredFarmers(string? searchName, string? createdByMe)
 		{
-			var allModelFarmers = new List<Farmer>();
+			var employeeId = _authService.GetUserIdRole().Item1;
+			var farmers = (createdByMe == "on")
+				? await _farmerService.FilterFarmersAsync(null, employeeId)
+				: await _farmerService.GetAllFarmersAsync();
 
-			if (createdByMe != null && createdByMe.Equals("on"))
-			{
-				var employeeId = _authService.GetUserIdRole().Item1;
-				allModelFarmers = await _farmerService.FilterFarmersAsync(null, employeeId);
-			}
-			else
-			{
-				allModelFarmers = await _farmerService.GetAllFarmersAsync();
-			}
-
-			// Apply filters
 			if (!string.IsNullOrEmpty(searchName))
 			{
-				allModelFarmers = allModelFarmers.Where(f =>
+				searchName = searchName.Trim();
+				farmers = farmers.Where(f =>
 					f.FirstName.Contains(searchName, StringComparison.OrdinalIgnoreCase) ||
 					f.LastName.Contains(searchName, StringComparison.OrdinalIgnoreCase) ||
 					f.Email.Contains(searchName, StringComparison.OrdinalIgnoreCase)).ToList();
 			}
 
-			var farmerViewModels = allModelFarmers.Select(f => new FarmerViewModel(f));
-
-			return PartialView("_FarmerCardList", farmerViewModels);
+			var viewModels = farmers.Select(f => new FarmerViewModel(f));
+			return PartialView("_FarmerCardList", viewModels);
 		}
 
+		/// <summary>
+		/// Displays detailed information about a specific farmer.
+		/// </summary>
+		/// <param name="farmerId">The ID of the farmer to view.</param>
+		/// <returns>The view with farmer details and their products.</returns>
 		public async Task<IActionResult> ViewFarmer(int farmerId)
 		{
 			var farmer = await _farmerService.GetFarmerByIdAsync(farmerId);
-
 			if (farmer == null)
-			{
-				return NotFound(); // Handle the case where the farmer is not found
-			}
+				return NotFound();
 
 			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
-
-			var detailedFarmerViewModel = new DetailedFarmerViewModel(farmer, products);
-
-			// Fetch distinct categories from the database
 			var categories = await _productService.GetAllCategoriesAsync();
 			ViewBag.Categories = categories.Select(c => c.Name).ToList();
 
-			return View(detailedFarmerViewModel);
+			return View(new DetailedFarmerViewModel(farmer, products));
 		}
 
+		/// <summary>
+		/// Displays the form to add a new farmer.
+		/// </summary>
+		/// <returns>The add farmer view.</returns>
 		[HttpGet]
-		public IActionResult AddFarmer()
-		{
-			return View();
-		}
+		public IActionResult AddFarmer() => View();
 
+		/// <summary>
+		/// Handles the submission of a new farmer.
+		/// </summary>
+		/// <param name="model">The view model containing farmer details.</param>
+		/// <returns>Redirects to the farmer management page on success, or redisplays the form on failure.</returns>
 		[HttpPost]
-		public async Task<IActionResult> AddFarmer(AddFarmerViewModel newFarmerViewModel)
+		public async Task<IActionResult> AddFarmer(AddFarmerViewModel model)
 		{
+			ValidateFarmerModel(model);
+
 			if (!ModelState.IsValid)
-			{
-				// If the model state is invalid, return the view with the current model to show validation errors
-				if (string.IsNullOrEmpty(newFarmerViewModel.FirstName))
-				{
-					ModelState.AddModelError("FirstName", "First name is required.");
-				}
+				return View(model);
 
-				if (string.IsNullOrEmpty(newFarmerViewModel.LastName))
-				{
-					ModelState.AddModelError("LastName", "Last name is required.");
-				}
-
-				if (string.IsNullOrEmpty(newFarmerViewModel.Email))
-				{
-					ModelState.AddModelError("Email", "Email is required.");
-				}
-				else if (!newFarmerViewModel.Email.Contains("@"))
-				{
-					ModelState.AddModelError("Email", "Invalid email address.");
-				}
-
-				if (newFarmerViewModel.Password != newFarmerViewModel.ConfirmPassword)
-				{
-					ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
-				}
-
-				return View(newFarmerViewModel);
-			}
-
-			// Check if the email is already in use
-			var existingUser = await _authService.IsEmailInUseAsync(newFarmerViewModel.Email);
-
-			if (existingUser)
+			if (await _authService.IsEmailInUseAsync(model.Email))
 			{
 				ModelState.AddModelError("Email", "Email is already in use.");
-				return View(newFarmerViewModel);
+				return View(model);
 			}
 
-			newFarmerViewModel.CreatedByEmployeeId = _authService.GetUserIdRole().Item1;
+			model.CreatedByEmployeeId = _authService.GetUserIdRole().Item1;
+			model.HashPassword = _authService.HashPassword(model.Password);
 
-			newFarmerViewModel.HashPassword = _authService.HashPassword(newFarmerViewModel.Password);
-
-			var newFarmer = new Farmer(newFarmerViewModel);
-
-			await _farmerService.AddFarmerAsync(newFarmer);
-
-			return RedirectToAction("ManageFarmers", "Employee");
+			await _farmerService.AddFarmerAsync(new Farmer(model));
+			return RedirectToAction(nameof(ManageFarmers));
 		}
 
+		/// <summary>
+		/// Displays the form to edit an existing farmer.
+		/// </summary>
+		/// <param name="farmerId">The ID of the farmer to edit.</param>
+		/// <returns>The edit farmer view.</returns>
 		public IActionResult EditFarmer(int farmerId)
 		{
-			var existingFarmer = _farmerService.GetFarmerByIdAsync(farmerId).Result;
-			if (existingFarmer == null)
-			{
-				return NotFound(); // Handle the case where the farmer is not found
-			}
+			var farmer = _farmerService.GetFarmerByIdAsync(farmerId).Result;
+			if (farmer == null)
+				return NotFound();
 
-			var existingFarmerViewModel = new AddFarmerViewModel(existingFarmer);
-
-			return View(existingFarmerViewModel);
+			return View(new AddFarmerViewModel(farmer));
 		}
 
+		/// <summary>
+		/// Handles the submission of updated farmer details.
+		/// </summary>
+		/// <param name="model">The view model containing updated farmer details.</param>
+		/// <returns>Redirects to the farmer management page on success, or redisplays the form on failure.</returns>
 		[HttpPost]
-		public async Task<IActionResult> UpdateFarmer(AddFarmerViewModel farmerViewModel)
+		public async Task<IActionResult> UpdateFarmer(AddFarmerViewModel model)
 		{
-			// dummy password for validation purposes
+			ValidateFarmerModel(model, isUpdate: true);
 
-			// Validate the model state
 			if (!ModelState.IsValid)
-			{
-				// If the model state is invalid, return the view with the current model to show validation errors
-				if (string.IsNullOrEmpty(farmerViewModel.FirstName))
-				{
-					ModelState.AddModelError("FirstName", "First name is required.");
-				}
-				if (string.IsNullOrEmpty(farmerViewModel.LastName))
-				{
-					ModelState.AddModelError("LastName", "Last name is required.");
-				}
-				if (string.IsNullOrEmpty(farmerViewModel.Email))
-				{
-					ModelState.AddModelError("Email", "Email is required.");
-				}
-				else if (!farmerViewModel.Email.Contains("@"))
-				{
-					ModelState.AddModelError("Email", "Invalid email address.");
-				}
+				return View("EditFarmer", model);
 
-				return View("EditFarmer", farmerViewModel);
-			}
-
-			var existingFarmer = await _farmerService.GetFarmerByIdAsync(farmerViewModel.FarmerId);
-			if (existingFarmer != null)
+			var farmer = await _farmerService.GetFarmerByIdAsync(model.FarmerId);
+			if (farmer != null)
 			{
-				existingFarmer.FirstName = farmerViewModel.FirstName;
-				existingFarmer.LastName = farmerViewModel.LastName;
-				existingFarmer.Email = farmerViewModel.Email;
-				existingFarmer.UpdatedOn = DateTime.UtcNow; // Update the timestamp
-				await _farmerService.UpdateFarmerAsync(existingFarmer);
+				farmer.FirstName = model.FirstName;
+				farmer.LastName = model.LastName;
+				farmer.Email = model.Email;
+				farmer.UpdatedOn = DateTime.UtcNow;
+
+				await _farmerService.UpdateFarmerAsync(farmer);
 			}
-			return RedirectToAction("ManageFarmers", "Employee");
+			return RedirectToAction(nameof(ManageFarmers));
 		}
 
+		/// <summary>
+		/// Deletes a farmer by their ID.
+		/// </summary>
+		/// <param name="farmerId">The ID of the farmer to delete.</param>
+		/// <returns>Redirects to the farmer management page.</returns>
 		[HttpPost]
 		public async Task<IActionResult> DeleteFarmer(int farmerId)
 		{
@@ -205,76 +178,98 @@ namespace WebApp.Controllers
 			{
 				await _farmerService.DeleteFarmerAsync(farmer.FarmerId);
 			}
-			return RedirectToAction("ManageFarmers", "Employee");
+			return RedirectToAction(nameof(ManageFarmers));
 		}
 
+		/// <summary>
+		/// Displays a list of all products.
+		/// </summary>
+		/// <returns>The view with a list of products.</returns>
 		public async Task<IActionResult> ManageProducts()
 		{
-			var allModelProducts = await _productService.GetAllProductsAsync();
-			var allProductsViewModels = allModelProducts.Select(p => new ProductViewModel(p));
-
-			// Fetch distinct categories from the database
+			var products = await _productService.GetAllProductsAsync();
 			var categories = await _productService.GetAllCategoriesAsync();
 			ViewBag.Categories = categories.Select(c => c.Name).ToList();
 
-			return View(allProductsViewModels);
+			return View(products.Select(p => new ProductViewModel(p)));
 		}
 
+		/// <summary>
+		/// Filters products based on search criteria.
+		/// </summary>
+		/// <param name="searchName">The product name to search for.</param>
+		/// <param name="farmerName">The farmer's name to filter by.</param>
+		/// <param name="category">The category to filter by.</param>
+		/// <param name="createdDate">The creation date to filter by.</param>
+		/// <returns>A partial view with the filtered list of products.</returns>
 		[HttpGet]
 		public async Task<IActionResult> GetFilteredProducts(string? searchName, string? farmerName, string? category, DateTime? createdDate)
 		{
-			var allModelProducts = await _productService.GetAllProductsAsync();
+			var products = (await _productService.GetAllProductsAsync()).Select(p => new ProductViewModel(p));
 
-			var allProductsViewModels = allModelProducts.Select(p => new ProductViewModel(p));
+			if (!string.IsNullOrWhiteSpace(searchName))
+				products = products.Where(p => p.Name.Contains(searchName.Trim(), StringComparison.OrdinalIgnoreCase));
 
-			// Apply filters
-			if (!string.IsNullOrEmpty(searchName))
-			{
-				allProductsViewModels = allProductsViewModels.Where(p => p.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase));
-			}
+			if (!string.IsNullOrWhiteSpace(farmerName))
+				products = products.Where(p => p.CreatedBy.FullName.Contains(farmerName.Trim(), StringComparison.OrdinalIgnoreCase));
 
-			if (!string.IsNullOrEmpty(farmerName))
-			{
-				allProductsViewModels = allProductsViewModels.Where(p => p.CreatedBy.FullName.Contains(farmerName, StringComparison.OrdinalIgnoreCase));
-			}
-
-			if (!string.IsNullOrEmpty(category))
-			{
-				allProductsViewModels = allProductsViewModels.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
-			}
+			if (!string.IsNullOrWhiteSpace(category))
+				products = products.Where(p => p.Category.Equals(category.Trim(), StringComparison.OrdinalIgnoreCase));
 
 			if (createdDate.HasValue)
-			{
-				allProductsViewModels = allProductsViewModels.Where(p => p.CreatedOn?.Date == createdDate.Value.Date);
-			}
+				products = products.Where(p => p.CreatedOn?.Date == createdDate.Value.Date);
 
-			return PartialView("_ProductCardList", allProductsViewModels);
+			return PartialView("_ProductCardList", products);
 		}
 
+		/// <summary>
+		/// Filters products by farmer and additional criteria.
+		/// </summary>
+		/// <param name="farmerId">The ID of the farmer to filter by.</param>
+		/// <param name="category">The category to filter by.</param>
+		/// <param name="startDate">The start date for filtering.</param>
+		/// <param name="endDate">The end date for filtering.</param>
+		/// <returns>A partial view with the filtered list of products.</returns>
 		[HttpGet]
 		public async Task<IActionResult> GetFilteredProductsByFarmer(int farmerId, string? category, DateTime? startDate, DateTime? endDate)
 		{
 			var products = await _productService.GetAllProductsByFarmerIdAsync(farmerId);
 
-			// Apply filters
-			if (!string.IsNullOrEmpty(category))
-			{
-				products = products.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase)).ToList();
-			}
+			if (!string.IsNullOrWhiteSpace(category))
+				products = products.Where(p => p.Category.Equals(category.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
 
 			if (startDate.HasValue)
-			{
 				products = products.Where(p => p.CreatedOn >= startDate.Value).ToList();
-			}
 
 			if (endDate.HasValue)
-			{
 				products = products.Where(p => p.CreatedOn <= endDate.Value).ToList();
+
+			return PartialView("_ProductCardList", products.Select(p => new ProductViewModel(p)));
+		}
+
+		/// <summary>
+		/// Validates the farmer model for required fields and constraints.
+		/// </summary>
+		/// <param name="model">The farmer model to validate.</param>
+		/// <param name="isUpdate">Indicates whether this is an update operation.</param>
+		private void ValidateFarmerModel(AddFarmerViewModel model, bool isUpdate = false)
+		{
+			if (string.IsNullOrWhiteSpace(model.FirstName))
+				ModelState.AddModelError("FirstName", "First name is required.");
+
+			if (string.IsNullOrWhiteSpace(model.LastName))
+				ModelState.AddModelError("LastName", "Last name is required.");
+
+			if (string.IsNullOrWhiteSpace(model.Email))
+				ModelState.AddModelError("Email", "Email is required.");
+			else if (!model.Email.Contains("@"))
+				ModelState.AddModelError("Email", "Invalid email address.");
+
+			if (!isUpdate)
+			{
+				if (model.Password != model.ConfirmPassword)
+					ModelState.AddModelError("ConfirmPassword", "Passwords do not match.");
 			}
-
-			var productViewModels = products.Select(p => new ProductViewModel(p));
-
-			return PartialView("_ProductCardList", productViewModels);
 		}
 	}
 }
