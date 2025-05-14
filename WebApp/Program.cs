@@ -15,9 +15,9 @@ namespace WebApp
 
 			// Configure services
 			ConfigureServices(builder);
-			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 
 			var app = builder.Build();
+			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 
 			// Configure middleware
 			ConfigureMiddleware(app);
