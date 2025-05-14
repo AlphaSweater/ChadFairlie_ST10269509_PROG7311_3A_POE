@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="localAgriEnergy.db" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -15,9 +19,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="localAgriEnergy.db" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\image\AgriEnergyLogo.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModels\Farmer\" />
   </ItemGroup>
 
 </Project>

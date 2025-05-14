@@ -1,0 +1,118 @@
+﻿@model IEnumerable<WebApp.ViewModels.Product.ProductViewModel>
+
+@{
+	ViewData["Title"] = "All Products";
+}
+
+<style>
+	body {
+		background-color: #fbf8f3;
+	}
+
+	.text-brown {
+		color: #6f4e37;
+	}
+
+	.btn-success {
+		background-color: #5e8c61;
+		border-color: #5e8c61;
+	}
+
+		.btn-success:hover {
+			background-color: #4e7551;
+			border-color: #4e7551;
+		}
+
+	.filterCard {
+		background-color: #f6f4ef;
+		border: none;
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+	}
+
+	.form-label {
+		font-weight: 600;
+		color: #6f4e37;
+	}
+
+</style>
+
+<div class="container py-4">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h2 class="text-success fw-bold">🛒 All Product Listings</h2>
+	</div>
+
+	<!-- Filter Section -->
+	<div class="filterCard shadow-sm border-0 mb-4">
+		<div class="card-body">
+			<h5 class="mb-3 text-brown">🔎 Filter Products</h5>
+			<form id="employee-filter-form" method="get" asp-action="AllProducts" class="row g-3 align-items-end">
+				<div class="col-md-3">
+					<label for="searchName" class="form-label">Product Name</label>
+					<input type="text" id="searchName" name="searchName" class="form-control" placeholder="e.g. Apples" value="@ViewData["searchName"]" />
+				</div>
+				<div class="col-md-3">
+					<label for="farmerName" class="form-label">Farmer Name</label>
+					<input type="text" id="farmerName" name="farmerName" class="form-control" placeholder="e.g. John Doe" value="@ViewData["farmerName"]" />
+				</div>
+				<div class="col-md-2">
+					<label for="category" class="form-label">Category</label>
+					<select id="category" name="category" class="form-select">
+						<option value="">All Categories</option>
+						<option value="Vegetables">Vegetables</option>
+						<option value="Fruits">Fruits</option>
+						<option value="Grains">Grains</option>
+					</select>
+				</div>
+				<div class="col-md-2">
+					<label for="createdDate" class="form-label">Created On</label>
+					<input type="date" id="createdDate" name="createdDate" class="form-control" value="@ViewData["createdDate"]" />
+				</div>
+				<div class="col-md-2 d-flex gap-2">
+					<a href="@Url.Action("ManageProducts", "employee")" class="btn btn-outline-secondary w-100">Clear</a>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Product Grid -->
+	<div id="employee-product-list" class="row">
+		@Html.Partial("_ProductCardList", Model)
+	</div>
+</div>
+
+<script>
+	const filterForm = document.getElementById("employee-filter-form");
+	const inputs = filterForm.querySelectorAll("input, select");
+
+	inputs.forEach(input => {
+		input.addEventListener("input", debounce(fetchFilteredProducts, 300));
+	});
+
+	function debounce(func, delay) {
+		let timer;
+		return function (...args) {
+			clearTimeout(timer);
+			timer = setTimeout(() => func.apply(this, args), delay);
+		};
+	}
+
+	function fetchFilteredProducts() {
+		const formData = new FormData(filterForm);
+		const queryString = new URLSearchParams(formData).toString();
+
+		fetch(`/Employee/GetFilteredProducts?${queryString}`)
+			.then(res => res.text())
+			.then(html => {
+				const productList = document.getElementById("employee-product-list");
+				productList.innerHTML = html;
+			});
+	}
+
+	// Handle the "Clear" button
+	document.querySelector(".btn-outline-secondary").addEventListener("click", function (e) {
+		e.preventDefault();
+		filterForm.reset(); // Reset the form fields
+		fetchFilteredProducts(); // Fetch all products
+	});
+</script>

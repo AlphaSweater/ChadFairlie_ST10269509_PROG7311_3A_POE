@@ -1,65 +1,54 @@
-﻿@model IEnumerable<WebApp.ViewModels.Farmer.FarmerProductCardViewModel>
+﻿@model IEnumerable<WebApp.ViewModels.Product.ProductViewModel>
 
 @{
 	ViewData["Title"] = "Manage Products";
 }
-
-<style>
-	body {
-		background-color: #fbf8f3;
-	}
-
-	.text-brown {
-		color: #6f4e37;
-	}
-
-	.btn-success {
-		background-color: #5e8c61;
-		border-color: #5e8c61;
-	}
-
-		.btn-success:hover {
-			background-color: #4e7551;
-			border-color: #4e7551;
+<head>
+	<style>
+		body {
+			background-color: #fbf8f3;
 		}
 
-	.card {
-		background-color: #f6f4ef;
-		border: none;
-		border-radius: 12px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-	}
-
-	.card-img-top {
-		height: 180px;
-		object-fit: cover;
-	}
-
-	.form-label {
-		font-weight: 600;
-		color: #6f4e37;
-	}
-
-	.add-product-btn {
-		font-weight: 600;
-		padding: 10px 20px;
-		border-radius: 8px;
-		box-shadow: 0 4px 10px rgba(94, 140, 97, 0.2);
-		transition: background-color 0.3s ease, transform 0.2s ease;
-		color: white;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-		.add-product-btn:hover {
-			background-color: #4e7551;
-			transform: scale(1.03);
-			text-decoration: none;
+		.text-brown {
+			color: #6f4e37;
 		}
 
+		.btn-success {
+			background-color: #5e8c61;
+			border-color: #5e8c61;
+		}
 
-</style>
+			.btn-success:hover {
+				background-color: #4e7551;
+				border-color: #4e7551;
+			}
+
+		.form-label {
+			font-weight: 600;
+			color: #6f4e37;
+		}
+
+		.add-product-btn {
+			font-weight: 600;
+			padding: 10px 20px;
+			border-radius: 8px;
+			box-shadow: 0 4px 10px rgba(94, 140, 97, 0.2);
+			transition: background-color 0.3s ease, transform 0.2s ease;
+			color: white;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+			.add-product-btn:hover {
+				background-color: #4e7551;
+				transform: scale(1.03);
+				text-decoration: none;
+			}
+
+	</style>
+</head>
+
 
 <div class="container py-4">
 	<div class="d-flex justify-content-between align-items-center mb-3">
@@ -99,52 +88,20 @@
 		</div>
 	</div>
 
-	<!-- Product Cards -->
+	<!-- Product Grid -->
 	<div id="product-list" class="row">
-		@if (Model.Any())
-		{
-			foreach (var product in Model)
-			{
-				<div class="col-md-4 mb-4">
-					<div class="card h-100 shadow-sm border-0" style="background-color: #fbf8f3;">
-						@if (product.Image != null && product.Image.Length > 0)
-						{
-							var base64Image = Convert.ToBase64String(product.Image);
-							<img src="data:image/jpeg;base64,@base64Image" class="card-img-top" alt="Product Image" />
-						}
-						else
-						{
-							<img src="~/images/placeholder.png" class="card-img-top" alt="No Image Available" />
-						}
-
-						<div class="card-body">
-							<h5 class="card-title text-success">@product.Name</h5>
-							<p class="card-text"><strong>Category:</strong> @product.Category</p>
-							<p class="card-text"><strong>Price:</strong> R @product.Price.ToString("0.00")</p>
-							<p class="card-text text-muted">
-								<small>Created: @(product.CreatedOn?.ToString("yyyy-MM-dd") ?? "N/A")</small>
-							</p>
-						</div>
-						<div class="card-footer bg-transparent border-0 d-flex justify-content-between">
-							<a asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-success">Edit</a>
-							<a asp-action="Delete" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-danger">Delete</a>
-						</div>
-					</div>
-				</div>
-			}
-		}
-		else
-		{
-			<div class="col-12">
-				<div class="alert alert-info text-center">
-					No products found matching your filters.
-				</div>
-			</div>
-		}
+		@Html.Partial("_ProductCardList", Model)
 	</div>
 </div>
 
 <script>
+	const filterForm = document.getElementById("filter-form");
+	const inputs = filterForm.querySelectorAll("input, select");
+
+	inputs.forEach(input => {
+		input.addEventListener("input", debounce(fetchFilteredProducts, 300));
+	});
+
 	// Debounce function to limit API calls
 	function debounce(func, delay) {
 		let timer;
@@ -156,56 +113,16 @@
 
 	// Function to fetch and update the product list
 	function fetchFilteredProducts() {
-		const formData = new FormData(document.getElementById("filter-form"));
-		const queryString = new URLSearchParams(formData).toString();
+	const formData = new FormData(filterForm);
+	const queryString = new URLSearchParams(formData).toString();
 
-		fetch(`/Farmer/GetFilteredProducts?${queryString}`)
-			.then(response => response.json())
-			.then(data => {
-				const productList = document.getElementById("product-list");
-				productList.innerHTML = ""; // Clear existing products
-
-				if (data.length === 0) {
-					productList.innerHTML = `
-							<div class="col-12">
-								<div class="alert alert-info text-center">
-									No products found matching your filters.
-								</div>
-							</div>`;
-					return;
-				}
-
-				data.forEach(product => {
-					const productCard = `
-							<div class="col-md-4 mb-4">
-								<div class="card h-100 shadow-sm">
-									${product.image ? `<img src="data:image/jpeg;base64,${product.image}" class="card-img-top" alt="Product Image" />` : `<img src="/images/placeholder.png" class="card-img-top" alt="No Image Available" />`}
-									<div class="card-body">
-										<h5 class="card-title">${product.name}</h5>
-										<p class="card-text"><strong>Category:</strong> ${product.category}</p>
-										<p class="card-text"><strong>Price:</strong> R ${product.price.toFixed(2)}</p>
-										<p class="card-text text-muted">
-											<small>Created: ${product.createdOn ? new Date(product.createdOn).toLocaleDateString() : "N/A"}</small>
-										</p>
-									</div>
-									<div class="card-footer d-flex justify-content-between">
-										<a href="/Farmer/Edit/${product.productId}" class="btn btn-sm btn-outline-primary">Edit</a>
-										<a href="/Farmer/Delete/${product.productId}" class="btn btn-sm btn-outline-danger">Delete</a>
-									</div>
-								</div>
-							</div>`;
-					productList.insertAdjacentHTML("beforeend", productCard);
-				});
-			});
+	fetch(`/Farmer/GetFilteredProducts?${queryString}`)
+		.then(res => res.text())
+		.then(html => {
+			const productList = document.getElementById("product-list");
+			productList.innerHTML = html;
+		});
 	}
-
-	// Attach event listeners for live filtering
-	const filterForm = document.getElementById("filter-form");
-	const inputs = filterForm.querySelectorAll("input, select");
-
-	inputs.forEach(input => {
-		input.addEventListener("input", debounce(fetchFilteredProducts, 300));
-	});
 
 	// Handle the "Clear" button
 	document.querySelector(".btn-outline-secondary").addEventListener("click", function (e) {

@@ -1,12 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApp.Controllers.Filters;
-using WebApp.ViewModels.Farmer;
+using WebApp.Services;
+using WebApp.ViewModels.Employee;
+using WebApp.ViewModels.Product;
 
 namespace WebApp.Controllers
 {
 	[RoleAuthorize("Farmer")]
 	public class FarmerController : BaseController
 	{
+		private readonly UserSessionService _userSessionService;
+
+		public FarmerController(UserSessionService userSessionService)
+		{
+			_userSessionService = userSessionService;
+		}
+
 		public async Task<IActionResult> Index()
 		{
 			return View();
@@ -14,7 +23,6 @@ namespace WebApp.Controllers
 
 		public async Task<IActionResult> ManageProducts()
 		{
-			// Fetch the initial list of products
 			var allProducts = await GetFarmerProductsAsync();
 			return View(allProducts);
 		}
@@ -40,28 +48,40 @@ namespace WebApp.Controllers
 				allProducts = allProducts.Where(p => p.CreatedOn?.Date == createdDate.Value.Date);
 			}
 
-			return Json(allProducts);
+			return PartialView("_ProductCardList", allProducts);
 		}
 
-		private Task<IEnumerable<FarmerProductCardViewModel>> GetFarmerProductsAsync()
+		private Task<IEnumerable<ProductViewModel>> GetFarmerProductsAsync()
 		{
 			// Simulate fetching data (replace with actual database/service logic)
-			var products = new List<FarmerProductCardViewModel>
+			var products = new List<ProductViewModel>
 			{
-				new FarmerProductCardViewModel
+				new ProductViewModel
 				{
 					ProductId = 1,
 					Name = "Tomatoes",
 					Category = "Vegetables",
 					Price = 20.5,
+					CreatedBy = new FarmerViewModel {
+						FarmerId = 2,
+						FirstName = "John",
+						LastName = "Doe",
+						Email = "John@farmer.co.za"
+					},
 					CreatedOn = DateTime.Now.AddDays(-10)
 				},
-				new FarmerProductCardViewModel
+				new ProductViewModel
 				{
 					ProductId = 2,
 					Name = "Apples",
 					Category = "Fruits",
 					Price = 15.0,
+					CreatedBy = new FarmerViewModel {
+						FarmerId = 2,
+						FirstName = "John",
+						LastName = "Doe",
+						Email = "John@farmer.co.za"
+					},
 					CreatedOn = DateTime.Now.AddDays(-5)
 				}
 			};

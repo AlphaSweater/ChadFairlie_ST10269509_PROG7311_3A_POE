@@ -40,10 +40,16 @@ namespace WebApp.Controllers
 			}
 		}
 
-		public IActionResult SkipLogin()
+		public IActionResult SkipFarmerLogin()
 		{
 			_userSessionService.SetUserIdRole(2, "Farmer"); // Set user ID and role in session
 			return RedirectToAction("Index", "Farmer");
+		}
+
+		public IActionResult SkipAdminLogin()
+		{
+			_userSessionService.SetUserIdRole(1, "Employee"); // Set user ID and role in session
+			return RedirectToAction("Index", "Employee");
 		}
 
 		public IActionResult Logout()

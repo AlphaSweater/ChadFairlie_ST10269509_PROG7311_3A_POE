@@ -1,0 +1,83 @@
+﻿@model WebApp.ViewModels.Employee.AddFarmerViewModel
+
+@{
+	ViewData["Title"] = "Create Farmer Profile";
+}
+
+<style>
+	.form-label {
+		font-weight: 600;
+		color: #6f4e37;
+	}
+
+	.form-control {
+		border-radius: 6px;
+	}
+
+	.card {
+		background-color: #f8f5ee;
+		border: none;
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+	}
+
+	.btn-success {
+		background-color: #5e8c61;
+		border-color: #5e8c61;
+	}
+
+	.btn-cancel {
+		background-color: #e0dcd2;
+		color: #6f4e37;
+	}
+</style>
+
+<div class="container py-5">
+	<h2 class="text-success fw-bold mb-4">👩‍🌾 Create a Farmer Profile</h2>
+
+	<div class="card p-4">
+		<form asp-action="CreateFarmer" method="post">
+			<div class="row g-3">
+
+				<div class="col-md-6">
+					<label asp-for="FirstName" class="form-label">First Name</label>
+					<input asp-for="FirstName" class="form-control" />
+					<span asp-validation-for="FirstName" class="text-danger small"></span>
+				</div>
+
+				<div class="col-md-6">
+					<label asp-for="LastName" class="form-label">Last Name</label>
+					<input asp-for="LastName" class="form-control" />
+					<span asp-validation-for="LastName" class="text-danger small"></span>
+				</div>
+
+				<div class="col-md-6">
+					<label asp-for="Email" class="form-label">Email</label>
+					<input asp-for="Email" class="form-control" />
+					<span asp-validation-for="Email" class="text-danger small"></span>
+				</div>
+
+				<div class="col-md-6">
+					<label asp-for="Password" class="form-label">Temporary Password</label>
+					<input asp-for="Password" class="form-control" />
+					<span asp-validation-for="Password" class="text-danger small"></span>
+				</div>
+
+				<input type="hidden" asp-for="CreatedByEmployeeId" />
+				<input type="hidden" asp-for="CreatedOn" />
+
+				<div class="col-12 d-flex justify-content-end gap-2 mt-3">
+					<a asp-action="ManageFarmers" class="btn btn-cancel">Cancel</a>
+					<button type="submit" class="btn btn-success">Create Farmer</button>
+				</div>
+
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

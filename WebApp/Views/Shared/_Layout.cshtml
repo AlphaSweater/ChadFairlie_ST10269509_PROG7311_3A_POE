@@ -40,13 +40,13 @@
 						@if (role == "Farmer")
 						{
 							<a class="nav-link text-white" asp-controller="Farmer" asp-action="ManageProducts">My Products</a>
-							<a class="nav-link text-white" asp-controller="Account" asp-action="Profile">My Profile</a>
+							<a class="nav-link text-white" asp-controller="Farmer" asp-action="Profile">My Profile</a>
 						}
 						else if (role == "Employee")
 						{
-							<a class="nav-link text-white" asp-controller="Product" asp-action="Index">All Products</a>
-							<a class="nav-link text-white" asp-controller="Farmer" asp-action="Index">Farmers</a>
-							<a class="nav-link text-white" asp-controller="Account" asp-action="Profile">My Profile</a>
+							<a class="nav-link text-white" asp-controller="Employee" asp-action="ManageProducts">All Products</a>
+							<a class="nav-link text-white" asp-controller="Employee" asp-action="ManageFarmers">All Farmers</a>
+							<a class="nav-link text-white" asp-controller="Employee" asp-action="Profile">My Profile</a>
 						}
 
 					</div>

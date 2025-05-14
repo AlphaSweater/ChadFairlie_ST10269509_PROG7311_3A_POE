@@ -1,0 +1,29 @@
+﻿@model IEnumerable<WebApp.ViewModels.Product.ProductViewModel>
+
+<style>
+	.product-card-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjust card width */
+		gap: 10px; /* Spacing between cards */
+		justify-content: center; /* Center the grid */
+		padding: 16px; /* Optional padding around the grid */
+	}
+</style>
+
+@if (!Model.Any())
+{
+	<div class="col-12">
+		<div class="alert alert-info text-center">
+			No products found matching your filters.
+		</div>
+	</div>
+}
+else
+{
+	<div class="product-card-grid">
+		@foreach (var product in Model)
+		{
+			@Html.Partial("_ProductCard", product)
+		}
+	</div>
+}

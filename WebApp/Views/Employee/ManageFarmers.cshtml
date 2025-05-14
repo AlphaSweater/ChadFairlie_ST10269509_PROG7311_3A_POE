@@ -1,0 +1,157 @@
+﻿@model IEnumerable<WebApp.ViewModels.Employee.FarmerViewModel>
+
+@{
+	ViewData["Title"] = "Manage Farmers";
+}
+
+<style>
+	body {
+		background-color: #fbf8f3;
+	}
+
+	.text-brown {
+		color: #6f4e37;
+	}
+
+	.btn-success {
+		background-color: #5e8c61;
+		border-color: #5e8c61;
+	}
+
+		.btn-success:hover {
+			background-color: #4e7551;
+			border-color: #4e7551;
+		}
+
+	.card {
+		background-color: #f6f4ef;
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+	}
+
+	.form-label {
+		font-weight: 600;
+		color: #6f4e37;
+	}
+
+	.add-farmer-btn {
+		font-weight: 600;
+		padding: 10px 20px;
+		border-radius: 8px;
+		color: white;
+		box-shadow: 0 4px 10px rgba(94, 140, 97, 0.2);
+		transition: background-color 0.3s ease, transform 0.2s ease;
+	}
+
+		.add-farmer-btn:hover {
+			background-color: #4e7551;
+			transform: scale(1.03);
+			text-decoration: none;
+		}
+</style>
+
+<div class="container py-4">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h2 class="text-success fw-bold">👩‍🌾 Manage Farmers</h2>
+		<a asp-action="AddFarmer" asp-controller="Employee" class="btn btn-success add-farmer-btn">+ Add New Farmer</a>
+	</div>
+
+	<!-- Filter/Search -->
+	<div class="card shadow-sm mb-4">
+		<div class="card-body">
+			<h5 class="mb-3 text-brown">🔎 Filter Farmers</h5>
+			<form id="filter-form" method="get" asp-action="ManageFarmers" class="row g-3">
+				<div class="col-md-5">
+					<label for="searchName" class="form-label">Name or Email</label>
+					<input type="text" id="searchName" name="searchName" class="form-control" value="@ViewData["searchName"]" placeholder="e.g. Sarah or sarah@email.com" />
+				</div>
+				<div class="col-md-2 align-self-end">
+					<a href="@Url.Action("ManageFarmers", "Farmer")" class="btn btn-outline-secondary w-100">Clear</a>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Farmer Cards -->
+	<div id="farmer-list" class="row">
+		@if (Model.Any())
+		{
+			foreach (var farmer in Model)
+			{
+				<div class="col-md-4 mb-4">
+					<div class="card h-100 p-3">
+						<div class="card-body">
+							<h5 class="card-title text-success">@farmer.FirstName @farmer.LastName</h5>
+							<p class="card-text"><strong>Email:</strong> @farmer.Email</p>
+							<p class="card-text text-muted"><small>Created: @(farmer.CreatedOn?.ToString("yyyy-MM-dd") ?? "N/A")</small></p>
+						</div>
+						<div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+							<a asp-action="Edit" asp-route-id="@farmer.FarmerId" class="btn btn-sm btn-outline-success">Edit</a>
+							<a asp-action="Delete" asp-route-id="@farmer.FarmerId" class="btn btn-sm btn-outline-danger">Delete</a>
+						</div>
+					</div>
+				</div>
+			}
+		}
+		else
+		{
+			<div class="col-12">
+				<div class="alert alert-info text-center">
+					No farmers found matching your filters.
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+<script>
+	function debounce(func, delay) {
+		let timer;
+		return function (...args) {
+			clearTimeout(timer);
+			timer = setTimeout(() => func.apply(this, args), delay);
+		};
+	}
+
+	function fetchFilteredFarmers() {
+		const formData = new FormData(document.getElementById("filter-form"));
+		const queryString = new URLSearchParams(formData).toString();
+
+		fetch(`/Farmer/GetFilteredFarmers?${queryString}`)
+			.then(response => response.json())
+			.then(data => {
+				const farmerList = document.getElementById("farmer-list");
+				farmerList.innerHTML = "";
+
+				if (data.length === 0) {
+					farmerList.innerHTML = `
+						<div class="col-12">
+							<div class="alert alert-info text-center">No farmers found matching your filters.</div>
+						</div>`;
+					return;
+				}
+
+				data.forEach(farmer => {
+					const card = `
+						<div class="col-md-4 mb-4">
+							<div class="card h-100 p-3">
+								<div class="card-body">
+									<h5 class="card-title">${farmer.firstName} ${farmer.lastName}</h5>
+									<p class="card-text"><strong>Email:</strong> ${farmer.email}</p>
+									<p class="card-text text-muted"><small>Created: ${farmer.createdOn ? new Date(farmer.createdOn).toLocaleDateString() : "N/A"}</small></p>
+								</div>
+								<div class="card-footer d-flex justify-content-between">
+									<a href="/Farmer/Edit/${farmer.farmerId}" class="btn btn-sm btn-outline-success">Edit</a>
+									<a href="/Farmer/Delete/${farmer.farmerId}" class="btn btn-sm btn-outline-danger">Delete</a>
+								</div>
+							</div>
+						</div>`;
+					farmerList.insertAdjacentHTML("beforeend", card);
+				});
+			});
+	}
+
+	document.querySelectorAll("#filter-form input").forEach(input => {
+		input.addEventListener("input", debounce(fetchFilteredFarmers, 300));
+	});
+</script>
