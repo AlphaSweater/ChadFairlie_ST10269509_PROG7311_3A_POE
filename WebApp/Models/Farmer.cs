@@ -5,7 +5,7 @@ using WebApp.ViewModels.EmployeeViewModels;
 namespace WebApp.Models
 {
 	[Table("TBL_Farmers")] // Maps the class to the table
-	public class Farmer
+	public class Farmer : BaseEntity
 	{
 		[Key]
 		[Column("farmer_id")]
@@ -24,21 +24,12 @@ namespace WebApp.Models
 		[Required]
 		[MaxLength(255)]
 		[Column("email")]
+		[EmailAddress]
 		public string Email { get; set; } // Maps to email
 
 		[Required]
 		[Column("password_hash")]
 		public string PasswordHash { get; set; } // Maps to password_hash
-
-		[Column("created_on")]
-		public DateTime? CreatedOn { get; set; } // Maps to created_on (TEXT)
-
-		[Column("updated_on")]
-		public DateTime? UpdatedOn { get; set; } // Maps to updated_on (TEXT)
-
-		[Required]
-		[Column("is_deleted")]
-		public bool IsDeleted { get; set; } = false; // Maps to is_deleted (INTEGER)
 
 		[Required]
 		[Column("created_by_employee_id")]
@@ -48,25 +39,22 @@ namespace WebApp.Models
 		[ForeignKey("CreatedByEmployeeId")]
 		public Employee CreatedByEmployee { get; set; }
 
+		public string FullName => $"{FirstName} {LastName}";
+
 		// Constructor
 		public Farmer()
 		{
 			// Default constructor
 		}
 
-		// Constructor to convert Model to ViewModel
+		// Constructor to convert ViewModel to Model
 		public Farmer(AddFarmerViewModel newFarmerViewModel)
 		{
 			FirstName = newFarmerViewModel.FirstName;
 			LastName = newFarmerViewModel.LastName;
 			Email = newFarmerViewModel.Email;
-
-			// PasswordHash should be hashed before storing it in the database
-
 			PasswordHash = newFarmerViewModel.HashPassword;
-			CreatedOn = DateTime.UtcNow; // Set CreatedOn to current UTC time
 			CreatedByEmployeeId = newFarmerViewModel.CreatedByEmployeeId;
-			IsDeleted = false; // Default value for IsDeleted
 		}
 	}
 }

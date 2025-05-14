@@ -5,7 +5,7 @@ using WebApp.ViewModels.ProductViewModels;
 namespace WebApp.Models
 {
 	[Table("TBL_Products")] // Maps the class to the table
-	public class Product
+	public class Product : BaseEntity
 	{
 		[Key]
 		[Column("product_id")]
@@ -23,6 +23,7 @@ namespace WebApp.Models
 
 		[Required]
 		[Column("price")]
+		[Range(0.01, double.MaxValue)]
 		public double Price { get; set; } // Maps to price (REAL in SQLite)
 
 		[Column("image")]
@@ -31,16 +32,6 @@ namespace WebApp.Models
 		[Required]
 		[Column("farmer_id")]
 		public int FarmerId { get; set; } // Maps to farmer_id (Foreign Key)
-
-		[Column("created_on")]
-		public DateTime? CreatedOn { get; set; } // Maps to created_on (TEXT)
-
-		[Column("updated_on")]
-		public DateTime? UpdatedOn { get; set; } // Maps to updated_on (TEXT)
-
-		[Required]
-		[Column("is_deleted")]
-		public bool IsDeleted { get; set; } = false; // Maps to is_deleted (INTEGER)
 
 		// Navigation Property
 		[ForeignKey("FarmerId")]
@@ -58,17 +49,14 @@ namespace WebApp.Models
 			Name = newProductViewModel.Name;
 			Category = newProductViewModel.Category;
 			Price = (double)newProductViewModel.Price;
-			// Convert IFormFile to byte array
+			FarmerId = newProductViewModel.FarmerId;
+
 			if (newProductViewModel.ImageFile != null)
 			{
-				using (var memoryStream = new MemoryStream())
-				{
-					newProductViewModel.ImageFile.CopyTo(memoryStream);
-					Image = memoryStream.ToArray();
-				}
+				using var memoryStream = new MemoryStream();
+				newProductViewModel.ImageFile.CopyTo(memoryStream);
+				Image = memoryStream.ToArray();
 			}
-			FarmerId = newProductViewModel.FarmerId; // Assuming FarmerId is passed in the ViewModel
-			CreatedOn = DateTime.UtcNow; // Set CreatedOn to current UTC time
 		}
 	}
 }

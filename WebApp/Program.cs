@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using WebApp.Data;
 using WebApp.Models;
 using WebApp.Repositories;
@@ -16,6 +17,7 @@ namespace WebApp
 			ConfigureServices(builder);
 
 			var app = builder.Build();
+			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 
 			// Configure middleware
 			ConfigureMiddleware(app);
@@ -66,6 +68,14 @@ namespace WebApp
 
 			builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 			builder.Services.AddScoped<EmployeeService>();
+
+			// Add logging
+			builder.Services.AddLogging(logging =>
+			{
+				logging.ClearProviders();
+				logging.AddConsole();
+				logging.AddDebug();
+			});
 		}
 
 		private static void ConfigureMiddleware(WebApplication app)

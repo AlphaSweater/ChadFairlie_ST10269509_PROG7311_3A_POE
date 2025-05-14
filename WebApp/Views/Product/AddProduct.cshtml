@@ -4,68 +4,13 @@
 	ViewData["Title"] = "Add New Product";
 }
 
-<link rel="stylesheet" href="~/css/manage-products.css" />
-
-<style>
-	body {
-		background-color: #fbf8f3;
-	}
-
-	.form-label {
-		font-weight: 600;
-		color: #6f4e37;
-	}
-
-	.form-control, .form-select {
-		border-radius: 6px;
-	}
-
-	.card {
-		background-color: #f6f4ef;
-		border: none;
-		border-radius: 12px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-	}
-
-	.btn-success {
-		background-color: #5e8c61;
-		border-color: #5e8c61;
-	}
-
-	.btn-success:hover {
-		background-color: #4e7551;
-		border-color: #4e7551;
-	}
-
-	.btn-cancel {
-		background-color: #e0dcd2;
-		color: #6f4e37;
-		border: none;
-	}
-
-	.btn-cancel:hover {
-		background-color: #d5cfc3;
-		color: #5a3d2b;
-	}
-
-	.btn-success {
-		background-color: #5e8c61;
-		border-color: #5e8c61;
-	}
-
-		.btn-success:hover {
-			background-color: #4e7551;
-			border-color: #4e7551;
-		}
-</style>
-
 <div class="container py-4">
 	<div class="d-flex justify-content-between align-items-center mb-4">
 		<h2 class="text-success fw-bold">🌾 Add a New Product</h2>
 		<a asp-action="ManageProducts" asp-controller="Farmer" class="btn btn-cancel">← Back to Products</a>
 	</div>
 
-	<div class="card p-4">
+	<div class="card">
 		<form asp-action="AddProduct" method="post" enctype="multipart/form-data">
 			<div class="row g-3">
 				<input type="hidden" asp-for="FarmerId" value="0" />
@@ -78,7 +23,7 @@
 				<div class="col-md-6">
 					<label asp-for="Category" class="form-label">Category</label>
 					<select asp-for="Category" class="form-select">
-						<option value="">All Categories</option>
+						<option value="">Select Category</option>
 						@foreach (var category in ViewBag.Categories as List<string>)
 						{
 							<option value="@category">@category</option>

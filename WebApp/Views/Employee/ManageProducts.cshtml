@@ -4,46 +4,13 @@
 	ViewData["Title"] = "All Products";
 }
 
-<style>
-	body {
-		background-color: #fbf8f3;
-	}
-
-	.text-brown {
-		color: #6f4e37;
-	}
-
-	.btn-success {
-		background-color: #5e8c61;
-		border-color: #5e8c61;
-	}
-
-		.btn-success:hover {
-			background-color: #4e7551;
-			border-color: #4e7551;
-		}
-
-	.filterCard {
-		background-color: #f6f4ef;
-		border: none;
-		border-radius: 12px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-	}
-
-	.form-label {
-		font-weight: 600;
-		color: #6f4e37;
-	}
-
-</style>
-
 <div class="container py-4">
 	<div class="d-flex justify-content-between align-items-center mb-3">
 		<h2 class="text-success fw-bold">🛒 All Product Listings</h2>
 	</div>
 
 	<!-- Filter Section -->
-	<div class="filterCard shadow-sm border-0 mb-4">
+	<div class="filter-card">
 		<div class="card-body">
 			<h5 class="mb-3 text-brown">🔎 Filter Products</h5>
 			<form id="employee-filter-form" method="get" asp-action="AllProducts" class="row g-3 align-items-end">
@@ -70,14 +37,14 @@
 					<input type="date" id="createdDate" name="createdDate" class="form-control" value="@ViewData["createdDate"]" />
 				</div>
 				<div class="col-md-2 d-flex gap-2">
-					<a href="@Url.Action("ManageProducts", "employee")" class="btn btn-outline-secondary w-100">Clear</a>
+					<a href="@Url.Action("ManageProducts", "employee")" class="btn btn-cancel w-100">Clear</a>
 				</div>
 			</form>
 		</div>
 	</div>
 
 	<!-- Product Grid -->
-	<div id="employee-product-list" class="row">
+	<div id="employee-product-list" class="row g-4">
 		@Html.Partial("_ProductCardList", Model)
 	</div>
 </div>
@@ -111,9 +78,9 @@
 	}
 
 	// Handle the "Clear" button
-	document.querySelector(".btn-outline-secondary").addEventListener("click", function (e) {
+	document.querySelector(".btn-cancel").addEventListener("click", function (e) {
 		e.preventDefault();
-		filterForm.reset(); // Reset the form fields
-		fetchFilteredProducts(); // Fetch all products
+		filterForm.reset();
+		fetchFilteredProducts();
 	});
 </script>
