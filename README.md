@@ -29,7 +29,7 @@ Follow the steps below to clone and run the project locally on your machine.
 ### 📥 1. Clone or Download the Repository
 
 ```bash
-git clone https://github.com/your-username/agri-energy-connect.git
+git clone https://github.com/AlphaSweater/ChadFairlie_ST10269509_PROG7311_3A_POE.git
 ```
 
 Or download the ZIP and extract it:
